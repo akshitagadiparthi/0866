@@ -16,10 +16,11 @@
 <body data-page="arrivals">
 <main>
 
+  <div class="ticker" id="ticker"></div>
   <header class="page-head">
     <div class="wrap">
       <h1>arrivals</h1>
-      <p class="lede">three beans, always. every fifteen days they change.</p>
+      <p class="lede" id="countLine">every fifteen days the beans change.</p>
       <p class="quiet" id="dates"></p>
     </div>
   </header>
@@ -28,11 +29,12 @@
     <div class="wrap">
       <div class="board" id="board">
         <div class="board-top"><span class="board-title">arrivals</span></div>
-        <div class="board-cols" aria-hidden="true"><span style="--n:12">ORIGIN</span><span style="--n:9">PROCESS</span><span style="--n:8">STATUS</span></div>
+        <div class="board-cols" aria-hidden="true"><span style="--n:12">ORIGIN</span><span style="--n:9">TYPE</span><span style="--n:8">STATUS</span></div>
         <div id="rows"></div>
-        <div class="board-foot">tap a row to read about it</div>
+        <div class="board-foot">tap a row or a stamp to read about it</div>
       </div>
 
+      <div class="stamps" id="stamps"></div>
       <div class="bean-detail" id="detail" aria-live="polite"></div>
     </div>
   </section>
@@ -92,17 +94,21 @@
 <script>
 (function () {
   const A = window.ARRIVALS, B = window.O866.board;
-  document.getElementById("dates").textContent = `landed ${A.landed}. next arrivals ${A.next}.`;
+  const O = window.O866;
+  const n = ["zero","one","two","three","four","five","six"][A.beans.length] || A.beans.length;
+  document.getElementById("countLine").textContent = `${n} beans on the board. every fifteen days they change.`;
+  document.getElementById("dates").textContent = `drop ${A.drop}: ${A.landed}. next arrivals ${A.next}.`;
+  O.ticker(document.getElementById("ticker"), ["drop " + A.drop, ...A.beans.map((b) => `${b.origin} · ${b.status}`), "ask us about any arrival"]);
 
   /* main board */
   const rowsBox = document.getElementById("rows");
-  const words = (i) => [A.beans[i].origin, A.beans[i].process, A.beans[i].status];
+  const words = (i) => [A.beans[i].origin, A.beans[i].type, A.beans[i].status];
   const rows = A.beans.map((b, i) => {
     const r = B.makeRow([12, 9, 8], ["", "", "status"]);
     r.classList.add("clickable");
     r.tabIndex = 0; r.setAttribute("role", "button");
-    r.addEventListener("click", () => show(i));
-    r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(i); } });
+    r.addEventListener("click", () => show(i, true));
+    r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(i, true); } });
     rowsBox.append(r);
     return r;
   });
@@ -110,14 +116,29 @@
   B.keepAlive(document.getElementById("board"), rows, words);
 
   const detail = document.getElementById("detail");
-  function show(i) {
+  const stampsBox = document.getElementById("stamps");
+  stampsBox.innerHTML = A.beans.map((b, i) => `
+    <button class="stamp pop-${b.colour || "red"}" type="button" data-i="${i}" aria-pressed="false">
+      <span class="stamp-inner">
+        <span class="stamp-top"><span>${b.type}</span><span>0866</span></span>
+        <span class="stamp-art">${O.art[b.type] || O.art.BLEND}</span>
+        <span><span class="stamp-name">${b.name}</span><span class="stamp-notes" style="display:block">${b.tasting}</span></span>
+      </span>
+    </button>`).join("");
+  stampsBox.addEventListener("click", (e) => { const st = e.target.closest(".stamp"); if (st) show(+st.dataset.i, true); });
+
+  function show(i, scroll) {
     const b = A.beans[i];
     rows.forEach((r, k) => { r.classList.toggle("active", k === i); r.setAttribute("aria-pressed", k === i); });
-    const facts = [["from", b.region], ["process", b.process.toLowerCase()], ["roaster", b.roaster], ["farm", b.farm], ["altitude", b.altitude], ["tastes like", b.tasting]]
+    stampsBox.querySelectorAll(".stamp").forEach((st, k) => st.setAttribute("aria-pressed", k === i));
+    detail.className = `bean-detail pop-${b.colour || "red"}`;
+    const facts = [["from", b.region], ["process", b.process], ["roast", b.roast], ["altitude", b.altitude], ["tastes like", b.tasting], ["roasted by", b.roaster]]
       .filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
     detail.innerHTML = `
-      <div><h3>${b.origin.toLowerCase()}</h3><dl class="facts">${facts}</dl></div>
+      <div><h3>${b.name}</h3><dl class="facts">${facts}</dl>
+        ${b.link ? `<a class="textlink roaster-link" href="${b.link}" target="_blank" rel="noopener">more from the roaster</a>` : ""}</div>
       <blockquote class="note" style="margin:0">${b.note}<span class="note-sign">from the counter</span></blockquote>`;
+    if (scroll) detail.scrollIntoView({ behavior: O.reduce ? "auto" : "smooth", block: "nearest" });
   }
   show(0);
 

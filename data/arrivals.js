@@ -1,47 +1,74 @@
 /* ─────────────────────────────────────────────────────────────
    ARRIVALS. Update this every 15 days.
-   Keep exactly three beans. Origin up to 12 letters,
-   process up to 9, status up to 8 (the board has that many tiles).
-   Everything below is SAMPLE text — replace it with the real beans.
+   On the board: origin up to 12 letters, type up to 9, status up to 8.
+   colour: pick one of  tangerine, caramel, monsoon, mango, red, bronze
    ───────────────────────────────────────────────────────────── */
 
 window.ARRIVALS = {
-  landed: "1 november",          // when this set arrived
-  next: "15 november",           // when the next set is due
+  drop: "001",                   // this set's number
+  landed: "the first drop",      // when this set arrived, e.g. "1 november"
+  next: "fifteen days later",    // when the next set is due, e.g. "15 november"
 
   beans: [
     {
-      origin: "ARAKU",
-      process: "NATURAL",
+      origin: "YIRGACHEFFE",
+      type: "MICROLOT",
       status: "ON BAR",
-      region: "araku valley, andhra pradesh",
-      roaster: "",
-      farm: "",
+      name: "ethiopia, yirgacheffe",
+      colour: "mango",
+      region: "yirgacheffe, southern ethiopia",
+      process: "microlot",
+      roast: "",
       altitude: "",
-      tasting: "sample: jaggery, ripe fruit, a little spice",
-      note: "sample note. write a line or two in your own words about why this one is on the board."
+      tasting: "bright fruit, florals, a little spice, peeled mango",
+      roaster: "toffee coffee roasters",
+      link: "https://toffeecoffeeroasters.com/products/ethiopia-coffee-yirgacheffe-africa",
+      note: "from the part of the world where coffee began. bright and floral, with spice and ripe mango underneath. the bag has an abyssinian roller on it, a bird that dives at anything that gets too close."
     },
     {
-      origin: "CHIKMAGALUR",
-      process: "WASHED",
+      origin: "KITHAGALALE",
+      type: "FERMENTED",
+      status: "ON BAR",
+      name: "tangerine, orange fermented",
+      colour: "tangerine",
+      region: "kithagalale estate, karnataka",
+      process: "washed, then fermented with orange pulp for 4–5 days",
+      roast: "medium",
+      altitude: "3,000 ft",
+      tasting: "orange, citrus, bright acidity",
+      roaster: "toffee coffee roasters",
+      link: "https://toffeecoffeeroasters.com/products/tangerine-orange-fermented-coffee",
+      note: "the beans sit with orange pulp for four to five days before they're roasted. it comes out bright and citrusy, and it holds up beautifully with milk. try it in a latte before you try it black."
+    },
+    {
+      origin: "KARNATAKA",
+      type: "BLEND",
       status: "LANDED",
-      region: "chikmagalur, karnataka",
-      roaster: "",
-      farm: "",
+      name: "blonde caramel",
+      colour: "caramel",
+      region: "the high hills of karnataka",
+      process: "natural",
+      roast: "medium",
       altitude: "",
-      tasting: "sample: cocoa, orange peel, clean finish",
-      note: "sample note. what it tastes like cold, who you'd give it to, what happened the week it arrived."
+      tasting: "stone fruit, caramel, a sweet finish",
+      roaster: "toffee coffee roasters",
+      link: "https://toffeecoffeeroasters.com/products/blonde-caramel-speciality-blend",
+      note: "stone fruit up front, caramel underneath. no syrup involved, that's just the bean. it wants to be cold."
     },
     {
       origin: "MALABAR",
-      process: "MONSOONED",
+      type: "MONSOONED",
       status: "ON BAR",
-      region: "malabar coast, kerala",
-      roaster: "",
-      farm: "",
+      name: "monsooned malabar",
+      colour: "monsoon",
+      region: "the malabar coast",
+      process: "monsooned",
+      roast: "",
       altitude: "",
-      tasting: "sample: earthy, low acid, heavy body",
-      note: "sample note. the filter-coffee people usually start here."
+      tasting: "mellow, soft body, a light bitterness",
+      roaster: "toffee coffee roasters",
+      link: "https://toffeecoffeeroasters.com/products/monsooned-malabar-coffee",
+      note: "the oldest story on the board. coffee once sailed to europe through the monsoon and arrived swollen, pale and mellow. now it's done on purpose. low acid, soft body. if you grew up on filter coffee, start here."
     }
   ]
 };

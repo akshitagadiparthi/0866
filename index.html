@@ -26,16 +26,19 @@
         <img id="heroLogo" src="assets/img/logo.png" alt="0866°" width="673" height="284">
         <p class="hero-line">coffee, mostly cold.</p>
       </div>
+      <div class="badge hero-badge" id="heroBadge"><div class="core"><img src="assets/img/bean.png" alt=""></div></div>
       <span class="hero-hint">scroll</span>
     </div>
   </section>
 
+  <div class="ticker" id="ticker"></div>
+
   <section>
     <div class="wrap split">
-      <div>
+      <div class="reveal">
         <p class="say">zero eight<br>double six.</p>
       </div>
-      <div class="measure">
+      <div class="measure reveal d1">
         <p class="lede">every city in india has a number. dial 0866 and you're in vijayawada.</p>
         <p>we took ours as a name. a small counter off benz circle with a cold-brew tap, a tower that drips all morning, and beans that change every fifteen days.</p>
         <p><a class="textlink" href="the-number.html">why a number</a></p>
@@ -45,35 +48,38 @@
 
   <section style="padding-top:0">
     <div class="wrap photo-strip">
-      <div class="photo">photo: the counter</div>
-      <div class="photo">photo: the tower</div>
-      <div class="photo">photo: the tap</div>
-      <div class="photo">photo: the window bench</div>
-      <div class="photo">photo: a cup, close up</div>
+      <div class="photo reveal">photo: the counter</div>
+      <div class="photo reveal d1">photo: the tower</div>
+      <div class="photo reveal d2">photo: the tap</div>
+      <div class="photo reveal d1">photo: the window bench</div>
+      <div class="photo reveal d2">photo: a cup, close up</div>
     </div>
   </section>
 
   <section class="band-red">
     <div class="wrap">
       <div class="split" style="align-items:start">
-        <div>
+        <div class="reveal">
           <h2>on the board now</h2>
-          <p class="measure">three beans at a time. every fifteen days they fly out and new ones land.</p>
+          <p class="measure" id="boardLine">every fifteen days the beans fly out and new ones land.</p>
           <div class="btn-row" style="margin-top:24px"><a class="btn" href="arrivals.html">see all arrivals</a></div>
         </div>
-        <div id="miniBoard"></div>
+        <div id="miniBoard" class="reveal d1"></div>
       </div>
     </div>
   </section>
 
-  <section>
+  <div class="outline-wrap" aria-hidden="true">
+    <div class="outline-track" id="outline"><span class="outline">zero eight double six</span><span class="outline">zero eight double six</span></div>
+  </div>
+
+  <section class="band-navy">
+    <span class="drip-line" aria-hidden="true"></span><span class="drip-dot" aria-hidden="true"></span>
     <div class="wrap split">
-      <div>
-        <p class="say">thirty cups.<br>one card.</p>
-      </div>
-      <div class="measure">
-        <p class="lede">₹4,500 a month for thirty coffees. cold brew, and everything from the espresso machine.</p>
-        <div class="btn-row"><a class="btn ghost" href="tap-pass.html">about the tap pass</a></div>
+      <div class="reveal"><p class="say">one drop<br>at a time.</p></div>
+      <div class="measure reveal d1" style="padding-left:clamp(0px,4vw,48px)">
+        <p class="lede">there's a tower on the counter. it drips all morning, in plain sight.</p>
+        <p>come in early and watch it work.</p>
       </div>
     </div>
   </section>
@@ -112,6 +118,21 @@
     stage.append(n);
   }
 
+  const O = window.O866;
+  const n = ["zero","one","two","three","four","five","six"][A.beans.length] || A.beans.length;
+  document.getElementById("boardLine").textContent = `${n} beans on the board. every fifteen days they fly out and new ones land.`;
+  O.ticker(document.getElementById("ticker"), [
+    "now boarding", ...A.beans.map((b) => `${b.origin} · ${b.type}`), "vijayawada 0866", "7:30 am to 10 pm, every day"
+  ]);
+  document.getElementById("heroBadge").insertAdjacentHTML("afterbegin", O.badge("zero eight double six · vijayawada · "));
+
+  /* outlined words drift with scroll */
+  const track = document.getElementById("outline");
+  if (!O.reduce) addEventListener("scroll", () => {
+    const r = track.getBoundingClientRect();
+    track.style.transform = `translateX(${(r.top - innerHeight) * .35}px)`;
+  }, { passive: true });
+
   /* mini arrivals board */
   const box = document.getElementById("miniBoard");
   const board = document.createElement("div");
@@ -119,7 +140,7 @@
   board.innerHTML = `<div class="board-top"><span class="board-title">arrivals</span></div>`;
   const rows = A.beans.map(() => { const r = B.makeRow([12, 9], ["", ""]); board.append(r); return r; });
   box.append(board);
-  const words = (i) => [A.beans[i].origin, A.beans[i].process];
+  const words = (i) => [A.beans[i].origin, A.beans[i].type];
   let started = false;
   new IntersectionObserver((es) => {
     if (es[0].isIntersecting && !started) { started = true; rows.forEach((r, i) => setTimeout(() => B.flipRow(r, words(i)), i * 250)); }

@@ -121,7 +121,7 @@
       status.textContent = `that's ${place}. we don't have its code yet.`;
     } else {
       words = [[code], [place.toUpperCase().replace(/[^A-Z0-9 ]/g, " ").slice(0, 12)]];
-      status.textContent = code === "0866" ? "you're already home." : `${place} dials ${code}. no 0866 there yet.`;
+      status.textContent = code === "0866" ? "you're already home." : `${place} dials ${code}. no 0866° there yet.`;
     }
     flip();
   });
