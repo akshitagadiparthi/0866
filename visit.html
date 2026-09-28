@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/config.js"></script>
+<title>visit — 0866°</title>
+<meta name="description" content="0866°, brindavan colony, sri ram nagar, off benz circle, vijayawada. open 7:30 am to 10 pm, every day.">
+</head>
+<body data-page="visit">
+<main>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>come in.</h1>
+      <p class="lede">7:30 am to 10 pm. every day.</p>
+    </div>
+  </header>
+  <section style="padding-top:0">
+    <div class="wrap split" style="align-items:start">
+      <div>
+        <h3>where</h3>
+        <p id="addr"></p>
+        <h3 style="margin-top:40px">talk to us</h3>
+        <div class="btn-row" id="contact"></div>
+        <div id="deliveryBox" hidden>
+          <h3 style="margin-top:40px">at home</h3>
+          <div class="btn-row" id="delivery"></div>
+        </div>
+      </div>
+      <div>
+        <iframe class="map-frame" title="map to 0866°" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=Brindavan+Colony,+Sri+Ram+Nagar,+Vijayawada&z=15&output=embed"></iframe>
+      </div>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap photo-strip">
+      <div class="photo">photo: the front, from the street</div>
+      <div class="photo">photo: the window bench</div>
+      <div class="photo">photo: inside</div>
+    </div>
+  </section>
+</main>
+<script src="assets/site.js"></script>
+<script>
+  const S = window.SITE, O = window.O866;
+  document.getElementById("addr").innerHTML = `${S.address.join("<br>")}<br><a class="textlink" href="${S.maps}" target="_blank" rel="noopener">open in google maps</a>`;
+  document.getElementById("contact").innerHTML = `
+    <a class="btn" href="tel:+91${S.phone}">call ${O.phoneNice}</a>
+    <a class="btn ghost" href="${O.wa()}" target="_blank" rel="noopener">whatsapp</a>
+    <a class="btn ghost" href="${S.instagram}" target="_blank" rel="noopener">instagram</a>`;
+  const d = [S.swiggy && `<a class="btn ghost" href="${S.swiggy}" target="_blank" rel="noopener">order on swiggy</a>`,
+             S.zomato && `<a class="btn ghost" href="${S.zomato}" target="_blank" rel="noopener">order on zomato</a>`].filter(Boolean);
+  if (d.length) { document.getElementById("delivery").innerHTML = d.join(""); document.getElementById("deliveryBox").hidden = false; }
+</script>
+</body>
+</html>

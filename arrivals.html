@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/config.js"></script>
+<title>arrivals — 0866°</title>
+<meta name="description" content="three beans on the board at 0866°, vijayawada. they change every fifteen days.">
+</head>
+<body data-page="arrivals">
+<main>
+
+  <header class="page-head">
+    <div class="wrap">
+      <h1>arrivals</h1>
+      <p class="lede">three beans, always. every fifteen days they change.</p>
+      <p class="quiet" id="dates"></p>
+    </div>
+  </header>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="board" id="board">
+        <div class="board-top"><span class="board-title">arrivals</span></div>
+        <div class="board-cols" aria-hidden="true"><span style="--n:12">ORIGIN</span><span style="--n:9">PROCESS</span><span style="--n:8">STATUS</span></div>
+        <div id="rows"></div>
+        <div class="board-foot">tap a row to read about it</div>
+      </div>
+
+      <div class="bean-detail" id="detail" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="flip-name">
+    <div class="wrap split" style="align-items:start">
+      <div>
+        <h2>flip your name</h2>
+        <p class="measure">put yourself on the board. download it and share it.</p>
+        <form class="form" id="nameForm" style="margin-top:24px">
+          <div class="field"><label for="nm">your name, up to 12 letters</label>
+            <input id="nm" class="name-input" maxlength="12" autocomplete="given-name" placeholder="your name"></div>
+          <div class="btn-row">
+            <button class="btn" type="submit">flip it</button>
+            <button class="btn ghost" type="button" id="dl">download for stories</button>
+          </div>
+        </form>
+      </div>
+      <div class="board" id="nameBoard">
+        <div class="board-top"><span class="board-title">now arriving</span></div>
+        <div id="nameRows"></div>
+        <div class="board-foot">at 0866°, vijayawada</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap split" style="align-items:start">
+      <div>
+        <h2>what should land next?</h2>
+        <p class="measure">ask for a bean, a drink, a style. or just tell us how your last cup was. we read everything.</p>
+      </div>
+      <form class="form" data-form="requests" data-thanks="got it. thank you for writing." novalidate>
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend class="small quiet" style="margin-bottom:8px">this is</legend>
+          <div class="choice">
+            <label><input type="radio" name="kind" value="request" checked><span>a request</span></label>
+            <label><input type="radio" name="kind" value="feedback"><span>feedback</span></label>
+          </div>
+        </fieldset>
+        <div class="field"><label for="msg">your note</label><textarea id="msg" name="message" required></textarea></div>
+        <div class="field"><label for="who">your name (optional)</label><input id="who" name="name" autocomplete="name"></div>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div><button class="btn" type="submit">send</button></div>
+        <p class="form-status" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+<script src="data/arrivals.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(function () {
+  const A = window.ARRIVALS, B = window.O866.board;
+  document.getElementById("dates").textContent = `landed ${A.landed}. next arrivals ${A.next}.`;
+
+  /* main board */
+  const rowsBox = document.getElementById("rows");
+  const words = (i) => [A.beans[i].origin, A.beans[i].process, A.beans[i].status];
+  const rows = A.beans.map((b, i) => {
+    const r = B.makeRow([12, 9, 8], ["", "", "status"]);
+    r.classList.add("clickable");
+    r.tabIndex = 0; r.setAttribute("role", "button");
+    r.addEventListener("click", () => show(i));
+    r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(i); } });
+    rowsBox.append(r);
+    return r;
+  });
+  rows.forEach((r, i) => setTimeout(() => B.flipRow(r, words(i), { spins: 10 }), 300 + i * 350));
+  B.keepAlive(document.getElementById("board"), rows, words);
+
+  const detail = document.getElementById("detail");
+  function show(i) {
+    const b = A.beans[i];
+    rows.forEach((r, k) => { r.classList.toggle("active", k === i); r.setAttribute("aria-pressed", k === i); });
+    const facts = [["from", b.region], ["process", b.process.toLowerCase()], ["roaster", b.roaster], ["farm", b.farm], ["altitude", b.altitude], ["tastes like", b.tasting]]
+      .filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+    detail.innerHTML = `
+      <div><h3>${b.origin.toLowerCase()}</h3><dl class="facts">${facts}</dl></div>
+      <blockquote class="note" style="margin:0">${b.note}<span class="note-sign">from the counter</span></blockquote>`;
+  }
+  show(0);
+
+  /* flip your name */
+  const nameRows = document.getElementById("nameRows");
+  const nr = B.makeRow([12]);
+  nameRows.append(nr);
+  const nr2 = B.makeRow([12]);
+  nameRows.append(nr2);
+  let current = "YOUR NAME";
+  const flipName = () => { B.flipRow(nr, [current], { spins: 9 }); B.flipRow(nr2, ["GATE 0866"], { spins: 5 }); };
+  flipName();
+  B.keepAlive(document.getElementById("nameBoard"), [nr], () => [current], 6000);
+  const input = document.getElementById("nm");
+  document.getElementById("nameForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    current = (input.value || "YOUR NAME").toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 12) || "YOUR NAME";
+    flipName();
+  });
+
+  /* story-sized image, drawn on the visitor's device */
+  document.getElementById("dl").addEventListener("click", async () => {
+    await document.fonts.ready;
+    const W = 1080, H = 1920, c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    x.fillStyle = "#F1EADB"; x.fillRect(0, 0, W, H);
+    for (let i = 0; i < 26000; i++) { // paper grain
+      x.fillStyle = `rgba(90,60,40,${Math.random() * .06})`;
+      x.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5);
+    }
+    const logo = new Image(); logo.src = "assets/img/logo.png";
+    await logo.decode().catch(() => {});
+    const lw = 560, lh = lw * logo.naturalHeight / logo.naturalWidth;
+    if (logo.naturalWidth) x.drawImage(logo, (W - lw) / 2, 260, lw, lh);
+
+    // board
+    const bx = 70, by = 720, bw = W - 140, bh = 560;
+    x.fillStyle = "#1f0d08"; roundRect(x, bx - 14, by - 14, bw + 28, bh + 28, 22); x.fill();
+    x.fillStyle = "#6E1A14"; roundRect(x, bx, by, bw, bh, 14); x.fill();
+    x.strokeStyle = "#A8783A"; x.lineWidth = 5; roundRect(x, bx, by, bw, bh, 14); x.stroke();
+    x.fillStyle = "#C9A574"; x.font = "italic 500 44px 'Bodoni Moda', serif";
+    x.fillText("now arriving", bx + 44, by + 80);
+    const lines = [current.padEnd(12, " "), "GATE 0866".padEnd(12, " ")];
+    const tw = 66, tg = 8, th = 92, startX = bx + (bw - (12 * tw + 11 * tg)) / 2;
+    lines.forEach((ln, r) => {
+      const y = by + 140 + r * (th + 40);
+      [...ln].forEach((ch, i) => {
+        const tx = startX + i * (tw + tg);
+        if (ch === " ") { x.strokeStyle = "rgba(201,165,116,.35)"; x.lineWidth = 2; roundRect(x, tx, y, tw, th, 6); x.stroke(); return; }
+        x.fillStyle = "#F4EEE2"; roundRect(x, tx, y, tw, th, 6); x.fill();
+        x.fillStyle = "#6E1A14"; x.font = "700 62px 'Archivo Narrow', sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+        x.fillText(ch, tx + tw / 2, y + th / 2 + 3);
+        x.fillStyle = "rgba(86,20,16,.25)"; x.fillRect(tx, y + th / 2, tw, 2);
+        x.textAlign = "start"; x.textBaseline = "alphabetic";
+      });
+    });
+    x.fillStyle = "#39180F"; x.textAlign = "center";
+    x.font = "italic 500 64px 'Bodoni Moda', serif"; x.fillText("zero eight double six.", W / 2, 1480);
+    x.font = "400 38px 'Newsreader', serif"; x.fillText("vijayawada  ·  0866.in", W / 2, 1560);
+    const a = document.createElement("a");
+    a.download = `0866-${current.trim().toLowerCase().replace(/\s+/g, "-") || "arrival"}.png`;
+    a.href = c.toDataURL("image/png"); a.click();
+  });
+  function roundRect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+})();
+</script>
+</body>
+</html>

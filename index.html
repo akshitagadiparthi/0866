@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/config.js"></script>
+<title>0866° — coffee, mostly cold. vijayawada.</title>
+<meta name="description" content="0866° is a cold coffee counter in vijayawada. rotating beans every fifteen days, a cold-brew tap, a drip tower, and a tap pass.">
+<meta property="og:title" content="0866° — zero eight double six">
+<meta property="og:description" content="coffee, mostly cold. vijayawada.">
+<meta property="og:image" content="assets/img/logo.png">
+</head>
+<body data-page="home">
+<main>
+
+  <section class="hero-scroll" id="hero">
+    <div class="hero-stage" id="stage">
+      <div class="hero-mark">
+        <h1 style="position:absolute;left:-9999px">0866°</h1>
+        <img id="heroLogo" src="assets/img/logo.png" alt="0866°" width="673" height="284">
+        <p class="hero-line">coffee, mostly cold.</p>
+      </div>
+      <span class="hero-hint">scroll</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div>
+        <p class="say">zero eight<br>double six.</p>
+      </div>
+      <div class="measure">
+        <p class="lede">every city in india has a number. dial 0866 and you're in vijayawada.</p>
+        <p>we took ours as a name. a small counter off benz circle with a cold-brew tap, a tower that drips all morning, and beans that change every fifteen days.</p>
+        <p><a class="textlink" href="the-number.html">why a number</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap photo-strip">
+      <div class="photo">photo: the counter</div>
+      <div class="photo">photo: the tower</div>
+      <div class="photo">photo: the tap</div>
+      <div class="photo">photo: the window bench</div>
+      <div class="photo">photo: a cup, close up</div>
+    </div>
+  </section>
+
+  <section class="band-red">
+    <div class="wrap">
+      <div class="split" style="align-items:start">
+        <div>
+          <h2>on the board now</h2>
+          <p class="measure">three beans at a time. every fifteen days they fly out and new ones land.</p>
+          <div class="btn-row" style="margin-top:24px"><a class="btn" href="arrivals.html">see all arrivals</a></div>
+        </div>
+        <div id="miniBoard"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div>
+        <p class="say">thirty cups.<br>one card.</p>
+      </div>
+      <div class="measure">
+        <p class="lede">₹4,500 a month for thirty coffees. cold brew, and everything from the espresso machine.</p>
+        <div class="btn-row"><a class="btn ghost" href="tap-pass.html">about the tap pass</a></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script src="data/arrivals.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(function () {
+  const S = window.SITE, B = window.O866.board, A = window.ARRIVALS;
+
+  /* scroll-played video */
+  const stage = document.getElementById("stage");
+  if (S.homeVideo) {
+    const v = document.createElement("video");
+    v.src = S.homeVideo; v.muted = true; v.playsInline = true; v.preload = "auto";
+    v.setAttribute("aria-hidden", "true");
+    stage.prepend(v); stage.classList.add("has-video");
+    document.getElementById("hero").classList.add("scrubbing");
+    document.getElementById("heroLogo").src = "assets/img/logo-cream.png";
+    const hero = document.getElementById("hero");
+    let target = 0;
+    const onScroll = () => {
+      const r = hero.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+      if (v.duration) target = p * v.duration;
+    };
+    addEventListener("scroll", onScroll, { passive: true });
+    (function loop() {
+      if (v.duration && Math.abs(v.currentTime - target) > .03) v.currentTime += (target - v.currentTime) * .2;
+      requestAnimationFrame(loop);
+    })();
+  } else {
+    const n = document.createElement("span");
+    n.className = "hero-video-note"; n.textContent = "space for the opening video";
+    stage.append(n);
+  }
+
+  /* mini arrivals board */
+  const box = document.getElementById("miniBoard");
+  const board = document.createElement("div");
+  board.className = "board mini";
+  board.innerHTML = `<div class="board-top"><span class="board-title">arrivals</span></div>`;
+  const rows = A.beans.map(() => { const r = B.makeRow([12, 9], ["", ""]); board.append(r); return r; });
+  box.append(board);
+  const words = (i) => [A.beans[i].origin, A.beans[i].process];
+  let started = false;
+  new IntersectionObserver((es) => {
+    if (es[0].isIntersecting && !started) { started = true; rows.forEach((r, i) => setTimeout(() => B.flipRow(r, words(i)), i * 250)); }
+  }, { threshold: .3 }).observe(board);
+  B.keepAlive(board, rows, words, 5200);
+})();
+</script>
+</body>
+</html>

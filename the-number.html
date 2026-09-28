@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/config.js"></script>
+<title>the number — 0866°</title>
+<meta name="description" content="0866 is vijayawada's std code. what's yours?">
+</head>
+<body data-page="the-number">
+<main>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="dial" aria-hidden="true">0866</p>
+      <h1 style="font-size:clamp(32px,4vw,56px)">is vijayawada.</h1>
+    </div>
+  </header>
+
+  <section style="padding-top:0">
+    <div class="wrap split" style="align-items:start">
+      <div class="measure">
+        <p class="lede">before mobile phones, every call out of town started with a code. dial zero eight double six and you reached this city.</p>
+        <p>we liked that a number could mean a place. so we named the café after ours. same counter, same coffee, but it belongs to here.</p>
+        <p>on the counter there's a tower: a slow cold drip, one drop at a time, brewing in plain sight. you'll see it when you come in.</p>
+      </div>
+      <figure style="margin:0">
+        <svg viewBox="0 0 320 400" role="img" aria-label="a drawing of the cold-drip tower" style="width:100%;max-width:360px;margin:0 auto">
+          <g fill="none" stroke="#A8783A" stroke-width="10" stroke-linecap="round">
+            <path d="M70 380 V40 H250 V380"/>
+          </g>
+          <rect x="40" y="372" width="240" height="18" rx="3" fill="#A8783A"/>
+          <circle cx="160" cy="100" r="48" fill="#F4EEE2" stroke="#39180F" stroke-width="2"/>
+          <g fill="#fff" stroke="#39180F" stroke-width="1.5">
+            <rect x="136" y="80" width="12" height="12"/><rect x="156" y="72" width="12" height="12"/><rect x="170" y="92" width="12" height="12"/>
+            <rect x="146" y="102" width="12" height="12"/><rect x="176" y="112" width="12" height="12"/>
+          </g>
+          <rect x="154" y="148" width="12" height="18" fill="#F4EEE2" stroke="#39180F" stroke-width="1.5"/>
+          <rect x="148" y="166" width="24" height="8" rx="2" fill="#A8783A"/>
+          <g fill="#39180F"><circle class="drop" cx="160" cy="186" r="3"/><circle class="drop d2" cx="160" cy="300" r="3"/></g>
+          <rect x="118" y="200" width="84" height="70" rx="6" fill="#F4EEE2" stroke="#39180F" stroke-width="1.5"/>
+          <rect x="120" y="232" width="80" height="36" rx="4" fill="#39180F"/>
+          <rect x="152" y="270" width="16" height="10" fill="#A8783A"/>
+          <rect x="112" y="310" width="96" height="62" rx="8" fill="#F4EEE2" stroke="#39180F" stroke-width="1.5"/>
+          <rect x="114" y="336" width="92" height="34" rx="6" fill="#4A2418"/>
+        </svg>
+        <style>
+          .drop { animation: fall 2.4s ease-in infinite; }
+          .d2 { animation-delay: 1.2s; }
+          @keyframes fall { 0% { transform: translateY(-6px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(12px); opacity: 0; } }
+          @media (prefers-reduced-motion: reduce) { .drop { animation: none; } }
+        </style>
+      </figure>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="std-board">
+    <div class="wrap split" style="align-items:start">
+      <div>
+        <h2>what's your code?</h2>
+        <p class="measure">type your pin code and we'll flip your city's std code onto the board.</p>
+        <form class="form" id="pinForm" style="margin-top:24px">
+          <div class="field"><label for="pin">your pin code</label>
+            <input id="pin" class="pin-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="postal-code" required></div>
+          <div><button class="btn" type="submit">find my code</button></div>
+          <p class="form-status" role="status" id="pinStatus"></p>
+        </form>
+      </div>
+      <div class="board" id="stdBoard">
+        <div class="board-top"><span class="board-title">your code</span></div>
+        <div id="stdRows"></div>
+        <div class="board-foot" id="stdFoot">std codes follow phone exchanges, not pin codes, so this is a close guess.</div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="data/std.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(function () {
+  const B = window.O866.board, T = window.STD;
+  const box = document.getElementById("stdRows");
+  const r1 = B.makeRow([5]), r2 = B.makeRow([12]);
+  box.append(r1, r2);
+  let words = [["0866"], ["VIJAYAWADA"]];
+  const flip = () => { B.flipRow(r1, words[0], { spins: 10 }); B.flipRow(r2, words[1], { spins: 8 }); };
+  flip();
+  B.keepAlive(document.getElementById("stdBoard"), [r1, r2], (i) => words[i], 5000);
+
+  const status = document.getElementById("pinStatus");
+  document.getElementById("pinForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pin = document.getElementById("pin").value.trim();
+    if (!/^[1-9]\d{5}$/.test(pin)) { status.textContent = "a pin code is six digits, like 520008."; return; }
+    status.textContent = "looking it up…";
+    let hit = T.exact[pin] || T.prefix4[pin.slice(0, 4)] || T.prefix3[pin.slice(0, 3)];
+    if (!hit) {
+      // free public lookup of the district, then our own table
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+        const data = await res.json();
+        const po = data && data[0] && data[0].PostOffice && data[0].PostOffice[0];
+        if (po) {
+          const d = po.District.toLowerCase();
+          const code = T.district[d];
+          hit = code ? [d, code] : [d, null];
+        }
+      } catch (err) { /* offline or blocked: fall through */ }
+    }
+    if (!hit) { status.textContent = "we couldn't place that one. try a nearby town's pin code."; return; }
+    const [place, code] = hit;
+    if (!code) {
+      words = [["?"], [place.toUpperCase().slice(0, 12)]];
+      status.textContent = `that's ${place}. we don't have its code yet.`;
+    } else {
+      words = [[code], [place.toUpperCase().replace(/[^A-Z0-9 ]/g, " ").slice(0, 12)]];
+      status.textContent = code === "0866" ? "you're already home." : `${place} dials ${code}. no 0866 there yet.`;
+    }
+    flip();
+  });
+})();
+</script>
+</body>
+</html>

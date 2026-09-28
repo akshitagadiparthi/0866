@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/config.js"></script>
+<title>tap pass — 0866°</title>
+<meta name="description" content="the 0866° tap pass: ₹4,500 a month for thirty coffees. cold brew and everything from the espresso machine.">
+</head>
+<body data-page="tap-pass">
+<main>
+  <header class="page-head">
+    <div class="wrap split">
+      <div>
+        <h1>tap pass</h1>
+        <p class="price">₹4,500</p>
+        <p class="lede">a month. thirty coffees. one card in your wallet.</p>
+      </div>
+      <div class="pass-card" aria-label="an illustration of the tap pass card">
+        <img src="assets/img/logo-cream.png" alt="" width="673" height="284">
+        <div>
+          <div class="pass-dots" aria-hidden="true" id="dots"></div>
+        </div>
+        <div class="row"><span>tap pass</span><span>no. ____</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section style="padding-top:clamp(24px,4vw,48px)">
+    <div class="wrap cols-2">
+      <div>
+        <h3>on the pass</h3>
+        <ul class="list-plain">
+          <li>cold brew from the tap</li>
+          <li>cold brew from the tower</li>
+          <li>everything from the espresso machine: espresso, americano, flat white, latte, and the rest</li>
+        </ul>
+      </div>
+      <div>
+        <h3>not on the pass</h3>
+        <ul class="list-plain">
+          <li>the handcrafted drinks: the fun ones, blended, protein and specials</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-red">
+    <div class="wrap split">
+      <div><h2>get yours</h2></div>
+      <div>
+        <p class="lede">call or message us and we'll have your card ready at the counter.</p>
+        <div class="btn-row" id="cta"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="assets/site.js"></script>
+<script>
+  const S = window.SITE, O = window.O866;
+  document.getElementById("dots").innerHTML = Array.from({ length: 30 }, (_, i) => `<i class="${i < 11 ? "on" : ""}"></i>`).join("");
+  document.getElementById("cta").innerHTML = `
+    <a class="btn" href="tel:+91${S.phone}">call ${O.phoneNice}</a>
+    <a class="btn ghost" href="${O.wa("hi 0866, i'd like a tap pass.")}" target="_blank" rel="noopener">whatsapp us</a>`;
+</script>
+</body>
+</html>

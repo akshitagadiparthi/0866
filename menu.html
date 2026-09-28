@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/config.js"></script>
+<title>menu — 0866°</title>
+<meta name="description" content="the menu at 0866°, vijayawada. espresso, cold brew from the tap and the tower, and a few fun ones.">
+</head>
+<body data-page="menu">
+<main>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>the menu</h1>
+      <p class="lede">the menu stays. the beans behind it change every fifteen days.</p>
+      <p><a class="textlink" href="arrivals.html">see what's on the board now</a></p>
+    </div>
+  </header>
+  <section style="padding-top:0">
+    <div class="wrap menu-sheets" id="sheets"></div>
+  </section>
+</main>
+<script src="assets/site.js"></script>
+<script>
+  const box = document.getElementById("sheets");
+  const imgs = window.SITE.menuImages || [];
+  box.innerHTML = imgs.length
+    ? imgs.map((src, i) => `<img src="${src}" alt="0866° menu, page ${i + 1} of ${imgs.length}" loading="lazy">`).join("")
+    : `<div class="photo" style="min-height:70vh">menu page 1 goes here</div><div class="photo" style="min-height:70vh">menu page 2 goes here</div>`;
+</script>
+</body>
+</html>
