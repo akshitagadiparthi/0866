@@ -175,7 +175,7 @@ section { padding: clamp(72px, 10vw, 140px) 0; }
 @media (max-width: 720px) {
   .board-cols { display: none; }
   .board-row { padding: 10px 0; }
-  .seg.status .tile { width: 15px; height: 20px; font-size: 11px; }
+  .seg.status .tile { width: 17px; height: 22px; font-size: 12px; }
 }
 
 /* ── loader ───────────────────────────────────────────── */
@@ -495,3 +495,119 @@ img { height: auto; }
 
 .bean-count { font-size: 13px; color: var(--bronze-soft); font-style: italic; }
 .foot-base { flex-wrap: wrap; }
+
+/* ═══ v4: new home + mobile pass ═══ */
+.sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.kicker { font-family: var(--board); font-weight: 700; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; color: var(--red); margin-bottom: 18px; display: inline-flex; align-items: center; gap: 10px; }
+.kicker::before { content: ""; width: 22px; height: 1.5px; background: currentColor; }
+
+/* hero: bean logo */
+.logo-holder { position: relative; width: min(86vw, 880px); margin: 0 auto; }
+.logo-holder img { width: 100%; }
+.hero-mark img#heroLogo { width: 100%; }
+.bean-logo { position: absolute; left: 0; top: 0; pointer-events: none; }
+.beans-ready #heroLogo { opacity: 0; }
+.hero-tip { font-size: 13px; color: var(--ink-soft); margin-top: 10px; opacity: 0; transition: opacity 1s 2.5s; font-style: italic; }
+.beans-ready .hero-tip { opacity: 1; }
+.hero-stage { touch-action: pan-y; }
+
+/* dial */
+.dial-sec { position: relative; overflow: hidden; }
+.dial-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+.dial-box { position: relative; max-width: 460px; width: 100%; justify-self: center; }
+.dial-svg { width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 30px 40px rgba(57,24,15,.28)); }
+.dial-plate { transform-box: view-box; transform-origin: 160px 160px; }
+.dial-num { font-family: var(--board); font-weight: 700; font-size: 24px; fill: var(--ink); }
+.dial-label { font-family: var(--display); font-style: italic; font-size: 15px; fill: var(--ink-soft); }
+.dial-code { font-family: var(--board); font-weight: 700; font-size: 26px; letter-spacing: .06em; fill: var(--red); }
+.dial-hit { fill: transparent; cursor: pointer; outline: none; }
+.dial-hit:hover, .dial-hit:focus-visible { fill: rgba(226,179,60,.35); }
+.dial-msg { font-family: var(--display); font-style: italic; font-size: clamp(20px, 2vw, 26px); color: var(--red); min-height: 1.4em; margin-top: 8px; }
+.dial-box.connected .dial-svg { animation: ring .12s linear 8; }
+@keyframes ring { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-2.5deg); } 75% { transform: rotate(2.5deg); } }
+
+/* a day at 0866 */
+.day { --sky: #F3E2C4; position: relative; padding: 0; background: var(--sky); transition: color .4s; }
+.day.night { color: var(--paper); }
+.day.night .kicker { color: var(--mango); }
+.day-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.day-head { display: flex; justify-content: space-between; align-items: baseline; position: absolute; top: 96px; left: 0; right: 0; z-index: 2; }
+.day-clock { font-family: var(--board); font-weight: 700; font-size: clamp(56px, 9vw, 130px); letter-spacing: .02em; line-height: 1; opacity: .9; }
+.day-sun { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, #FFE7A8 0 35%, rgba(255,210,120,.0) 70%); transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
+.day.night .day-sun { background: radial-gradient(circle at 38% 40%, #F4EEE2 0 30%, rgba(244,238,226,0) 60%); }
+.day-track { display: flex; gap: clamp(24px, 4vw, 64px); padding: 0 var(--gutter); padding-left: max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter))); will-change: transform; position: relative; z-index: 1; margin-top: 60px; }
+.day-card { flex: none; width: min(420px, 78vw); padding: 28px 0; border-top: 2px solid currentColor; }
+.day-time { font-family: var(--board); font-weight: 700; font-size: 14px; letter-spacing: .16em; opacity: .7; }
+.day-card h3 { font-size: clamp(34px, 3.4vw, 50px); margin: 12px 0 14px; }
+.day-card p { max-width: 24em; }
+.day-swipe { display: none; font-size: 14px; opacity: .7; margin-top: 18px; }
+@media (max-width: 899px), (prefers-reduced-motion: reduce) {
+  .day-sticky { position: relative; height: auto; padding: 72px 0 40px; }
+  .day-head { position: relative; top: 0; }
+  .day-clock { font-size: 64px; }
+  .day-track { overflow-x: auto; scroll-snap-type: x mandatory; margin-top: 24px; padding-bottom: 12px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .day-track::-webkit-scrollbar { display: none; }
+  .day-card { scroll-snap-align: start; width: 80vw; }
+  .day-swipe { display: block; }
+  .day-sun { display: none; }
+}
+
+/* polaroid collage */
+.collage-sec { overflow: hidden; }
+.collage-title { max-width: 14em; }
+.collage { position: relative; max-width: 1240px; margin: 48px auto 0; height: 640px; }
+.polaroid { position: absolute; margin: 0; background: #FFFCF6; padding: 12px 12px 0; box-shadow: 0 18px 40px -18px rgba(57,24,15,.45); transition: transform .5s cubic-bezier(.3,1.5,.5,1); }
+.polaroid .photo { min-height: 0; aspect-ratio: 4/5; border: 0; }
+.polaroid figcaption { font-family: var(--display); font-style: italic; font-size: 18px; padding: 12px 4px 16px; }
+.polaroid::before { content: ""; position: absolute; top: -12px; left: 50%; width: 90px; height: 26px; transform: translateX(-50%) rotate(-3deg); background: rgba(201,165,116,.55); }
+.polaroid:hover { transform: rotate(0) scale(1.04) !important; z-index: 5; }
+.p1 { width: 30%; left: 4%; top: 20px; transform: rotate(-5deg); }
+.p2 { width: 24%; left: 30%; top: 150px; transform: rotate(4deg); z-index: 2; }
+.p3 { width: 22%; left: 52%; top: 10px; transform: rotate(-2deg); }
+.p4 { width: 26%; left: 70%; top: 170px; transform: rotate(6deg); z-index: 2; }
+.p5 { width: 18%; left: 80%; top: -10px; transform: rotate(-7deg); }
+@media (max-width: 899px) {
+  .collage { height: auto; display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 24px var(--gutter) 30px; margin-top: 16px; scrollbar-width: none; }
+  .collage::-webkit-scrollbar { display: none; }
+  .polaroid { position: relative; left: auto !important; top: auto !important; width: 66vw !important; flex: none; scroll-snap-align: center; }
+}
+
+/* ── mobile pass ── */
+@media (max-width: 860px) {
+  .foot-grid { grid-template-columns: 1fr; gap: 36px; }
+  .dial-grid { grid-template-columns: 1fr; }
+  .dial-box { max-width: 340px; }
+}
+@media (max-width: 720px) {
+  :root { --gutter: 20px; }
+  section { padding: 64px 0; }
+  .page-head { padding: 44px 0 20px; }
+  h1 { font-size: clamp(44px, 13vw, 64px); }
+  h2 { font-size: clamp(34px, 10vw, 46px); }
+  .say { font-size: clamp(44px, 13vw, 60px); }
+  .lede { font-size: 19px; }
+  .site-header .wrap { height: 60px; }
+  .nav { inset: 60px 0 auto 0; }
+  .brand img { height: 26px; }
+  /* boards: bigger tiles, each word on its own line */
+  .board { padding: 16px 14px; box-shadow: 0 0 0 5px #1f0d08, 0 20px 40px -24px rgba(57,24,15,.6); }
+  #board { --u: 13.6; --tmin: 16px; --tmax: 26px; }
+  .board.mini { --u: 13.6; --tmin: 14px; --tmax: 24px; }
+  .board-row { gap: 5px; }
+  .hero-badge { width: 92px; right: 14px; bottom: 90px; }
+  .logo-holder { width: 90vw; }
+  .hero-line { font-size: 22px; }
+  .pass-card { transform: rotate(-2deg); margin: 8px auto 0; }
+  .price { font-size: 72px; }
+  .split { gap: 28px; }
+  .band-navy .split > div:last-child { padding-left: 0 !important; }
+  .scroll-cup { width: 44px; height: 48px; right: 12px; bottom: 12px; }
+  .foot-base { margin-top: 40px; }
+  .gets div { padding: 18px 0; }
+  .btn { font-size: 16px; padding: .7em 1.2em; }
+  .stamps { margin-top: 28px; }
+  .note { font-size: 21px; padding-left: 16px; }
+  .facts { gap: 6px 16px; font-size: 16px; }
+  .outline { font-size: 26vw; }
+  .ticker span { padding: 11px 0; }
+}

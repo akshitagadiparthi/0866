@@ -22,9 +22,10 @@
   <section class="hero-scroll" id="hero">
     <div class="hero-stage" id="stage">
       <div class="hero-mark">
-        <h1 style="position:absolute;left:-9999px">0866°</h1>
-        <img id="heroLogo" src="assets/img/logo.png" alt="0866°" width="673" height="284">
+        <h1 class="sr">0866°, coffee in vijayawada</h1>
+        <div class="logo-holder"><img id="heroLogo" src="assets/img/logo.png" alt="0866°" width="673" height="284"></div>
         <p class="hero-line">coffee, mostly cold.</p>
+        <p class="hero-tip">touch the beans</p>
       </div>
       <div class="badge hero-badge" id="heroBadge"><div class="core"><img src="assets/img/bean.png" alt=""></div></div>
       <span class="hero-hint">scroll</span>
@@ -33,26 +34,76 @@
 
   <div class="ticker" id="ticker"></div>
 
-  <section>
-    <div class="wrap split">
-      <div class="reveal">
+  <!-- dial -->
+  <section class="dial-sec">
+    <div class="wrap dial-grid">
+      <div class="dial-copy">
+        <p class="kicker">std code</p>
         <p class="say">zero eight<br>double six.</p>
+        <p class="lede">every city in india has a number. dial 0866 and you reach vijayawada.</p>
+        <p>we took ours as a name. a small counter off benz circle, a cold-brew tap, a tower that drips all morning, and beans that change every fifteen days.</p>
+        <p class="dial-msg" id="dialMsg" role="status">go on, dial 0866.</p>
       </div>
-      <div class="measure reveal d1">
-        <p class="lede">every city in india has a number. dial 0866 and you're in vijayawada.</p>
-        <p>we took ours as a name. a small counter off benz circle with a cold-brew tap, a tower that drips all morning, and beans that change every fifteen days.</p>
-        <p><a class="textlink" href="the-number.html">why a number</a></p>
-      </div>
+      <div class="dial-box" id="dial"></div>
     </div>
   </section>
 
-  <section style="padding-top:0">
-    <div class="wrap photo-strip">
-      <div class="photo reveal">photo: the counter</div>
-      <div class="photo reveal d1">photo: the tower</div>
-      <div class="photo reveal d2">photo: the tap</div>
-      <div class="photo reveal d1">photo: the window bench</div>
-      <div class="photo reveal d2">photo: a cup, close up</div>
+  <!-- a day -->
+  <section class="day" id="day">
+    <div class="day-sticky">
+      <div class="day-head wrap">
+        <p class="kicker">a day at 0866°</p>
+        <span class="day-clock" aria-hidden="true">07:30</span>
+      </div>
+      <div class="day-sun" aria-hidden="true"></div>
+      <div class="day-track">
+        <article class="day-card" data-time="07:30" data-sky="#F3E2C4">
+          <span class="day-time">07:30</span>
+          <h3>doors open.</h3>
+          <p>clinics, school runs and the colony. the first tower batch is already dripping, and the people behind the counter start to know your order.</p>
+        </article>
+        <article class="day-card" data-time="10:00" data-sky="#F1EADB">
+          <span class="day-time">10:00</span>
+          <h3>between meetings.</h3>
+          <p>founders and freelancers from around benz circle. a great cup in three minutes, twice a day.</p>
+        </article>
+        <article class="day-card" data-time="13:00" data-sky="#EFD9B0">
+          <span class="day-time">13:00</span>
+          <h3>after the gym.</h3>
+          <p>protein cold brew and labels that tell you exactly what's in the cup.</p>
+        </article>
+        <article class="day-card" data-time="16:30" data-sky="#E3A96B">
+          <span class="day-time">16:30</span>
+          <h3>the fun ones.</h3>
+          <p>students in groups of six, one table, four phones out, everyone photographing the tower.</p>
+        </article>
+        <article class="day-card" data-time="19:00" data-sky="#7A2A1E">
+          <span class="day-time">19:00</span>
+          <h3>the converts.</h3>
+          <p>the ones who swore by filter coffee. we start them on the date cold brew and let the counter do the rest.</p>
+        </article>
+        <article class="day-card" data-time="22:00" data-sky="#1E2F45">
+          <span class="day-time">22:00</span>
+          <h3>lights down.</h3>
+          <p>last cup poured. the tower gets set for tomorrow. see you at 7:30.</p>
+        </article>
+      </div>
+      <p class="day-swipe wrap" aria-hidden="true">swipe through the day →</p>
+    </div>
+  </section>
+
+  <!-- collage -->
+  <section class="collage-sec">
+    <div class="wrap">
+      <p class="kicker">the counter, soon</p>
+      <h2 class="collage-title">we're still building.<br>here's where the photos go.</h2>
+    </div>
+    <div class="collage">
+      <figure class="polaroid p1"><div class="photo">the counter</div><figcaption>the counter</figcaption></figure>
+      <figure class="polaroid p2"><div class="photo">the tower</div><figcaption>the tower, batch 001</figcaption></figure>
+      <figure class="polaroid p3"><div class="photo">the tap</div><figcaption>the tap</figcaption></figure>
+      <figure class="polaroid p4"><div class="photo">the window bench</div><figcaption>the window bench</figcaption></figure>
+      <figure class="polaroid p5"><div class="photo">a cup</div><figcaption>a cup, close up</figcaption></figure>
     </div>
   </section>
 
@@ -148,5 +199,6 @@
   B.keepAlive(board, rows, words, 5200);
 })();
 </script>
+<script src="assets/home.js"></script>
 </body>
 </html>

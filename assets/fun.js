@@ -57,7 +57,7 @@
 
   /* ── floating beans in the hero ──────────────────────── */
   const stage = document.getElementById("stage");
-  if (stage) {
+  if (stage && !document.getElementById("heroLogo")) {
     const field = document.createElement("div");
     field.className = "float-field"; field.setAttribute("aria-hidden", "true");
     const N = coarse ? 9 : 16;
