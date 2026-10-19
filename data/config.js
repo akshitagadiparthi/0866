@@ -9,7 +9,7 @@ window.SITE = {
   email: "0866.coffee@gmail.com",
   instagram: "https://www.instagram.com/0866.in",
   instagramHandle: "@0866.in",
-  maps: "https://maps.app.goo.gl/SSLHPVoue6V2Sa4A8",
+  maps: "https://www.google.com/maps/search/?api=1&query=0866%20Coffee&query_place_id=ChIJNYDdShn7NToR3k_aVSs5qI0",   // 0866 Coffee on google maps
   address: ["brindavan colony, sri ram nagar", "off benz circle, vijayawada"],
   hours: "7:30 am to 10 pm, every day",
 
