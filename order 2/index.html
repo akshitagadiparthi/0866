@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="/assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<title>order — 0866°</title>
+<meta name="description" content="order at 0866°, vijayawada. pick your coffee, pay by upi or cash, and we'll call your number.">
+<style>
+/* order page — builds on /assets/style.css */
+button { text-transform: inherit; }
+input { text-transform: none; }
+.o-head { position: relative; overflow: hidden; }
+.o-head .badge { right: var(--gutter); top: clamp(40px, 6vw, 80px); }
+.o-head h1 { margin-bottom: .25em; }
+.o-head .lede { max-width: 22em; }
+@media (max-width: 720px) { .o-head .badge { width: 84px; top: 34px; right: 16px; } .o-head h1 { padding-right: 70px; } }
+
+/* menu list */
+.o-menu { list-style: none; margin: 0; padding: 0 0 150px; border-top: 1px solid var(--bronze-soft); }
+.o-item { display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; align-items: end; padding: 22px 0 22px 18px; border-bottom: 1px solid var(--bronze-soft); position: relative; }
+.o-item::before { content: ""; position: absolute; left: 0; top: 22px; bottom: 22px; width: 3px; background: var(--pop, var(--red)); border-radius: 2px; }
+.o-code { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: color-mix(in srgb, var(--pop, var(--red)) 75%, var(--ink)); }
+.o-tag { padding: 2px 9px; border: 1px solid currentColor; border-radius: 999px; font-size: 10.5px; letter-spacing: .12em; }
+.o-name { font-size: clamp(30px, 3.2vw, 44px); margin: 4px 0 4px; }
+.o-desc { color: var(--ink-soft); font-size: 16.5px; margin: 0; max-width: 30em; line-height: 1.45; }
+.o-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.o-price { font-family: var(--board); font-weight: 700; font-size: 22px; letter-spacing: .04em; }
+.o-add { font-size: 16px; padding: .55em 1.2em; }
+.o-step { display: inline-flex; align-items: center; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); }
+.o-step button { width: 40px; height: 40px; border: 0; background: none; color: inherit; font: 700 20px var(--board); cursor: pointer; }
+.o-step b { min-width: 22px; text-align: center; font-family: var(--board); font-size: 18px; }
+.o-item.pop { animation: o-pop .45s cubic-bezier(.3,1.6,.5,1); }
+@keyframes o-pop { 40% { transform: translateX(6px); } }
+.o-skel { height: 120px; border-bottom: 1px solid var(--bronze-soft); background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,.5) 50%, transparent 80%) 0 0 / 200% 100%; animation: o-sh 1.3s infinite; }
+@keyframes o-sh { to { background-position: -200% 0; } }
+
+/* cart bar */
+.o-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 12px var(--gutter) calc(14px + env(safe-area-inset-bottom)); transform: translateY(140%); transition: transform .4s cubic-bezier(.3,1.4,.5,1); }
+.o-bar.show { transform: none; }
+.o-bar button { width: 100%; max-width: 640px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--ink); color: var(--paper); border: 0; border-radius: 999px; padding: 16px 24px; font: inherit; font-size: 18px; cursor: pointer; box-shadow: 0 20px 40px -18px rgba(57,24,15,.7); }
+.o-bar .n { font-family: var(--board); font-weight: 700; background: var(--mango); color: var(--ink); border-radius: 999px; padding: 1px 10px; margin-right: 10px; font-size: 15px; }
+.o-bar .t { font-family: var(--board); font-weight: 700; letter-spacing: .04em; }
+.o-bar.bump button { animation: o-bump .4s; }
+@keyframes o-bump { 40% { transform: scale(1.03); } }
+
+/* sheet */
+.o-scrim { position: fixed; inset: 0; z-index: 70; background: rgba(57,24,15,.45); opacity: 0; pointer-events: none; transition: opacity .25s; }
+.o-scrim.show { opacity: 1; pointer-events: auto; }
+.o-sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 71; max-height: 92vh; overflow: auto; background: var(--paper); border-top: 3px solid var(--bronze); border-radius: 22px 22px 0 0; padding: 12px 0 calc(28px + env(safe-area-inset-bottom)); transform: translateY(105%); visibility: hidden; transition: transform .35s cubic-bezier(.2,1,.3,1), visibility 0s .35s; }
+.o-sheet.show { transform: none; visibility: visible; transition: transform .35s cubic-bezier(.2,1,.3,1); }
+.o-sheet .wrap { max-width: 640px; }
+.o-grab { width: 48px; height: 4px; border-radius: 4px; background: var(--ink); opacity: .2; margin: 0 auto 14px; }
+.o-sheet-head { display: flex; justify-content: space-between; align-items: baseline; }
+.o-sheet-head h2 { font-size: clamp(36px, 8vw, 52px); margin: 0; }
+.o-x { border: 1px solid var(--ink); background: none; border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 15px; cursor: pointer; color: var(--ink); }
+.o-line { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid rgba(57,24,15,.14); }
+.o-line .nm { flex: 1; font-family: var(--display); font-style: italic; font-size: 22px; line-height: 1.1; }
+.o-line .nm small { display: block; font-family: var(--board); font-style: normal; font-weight: 700; font-size: 13px; letter-spacing: .06em; color: var(--ink-soft); margin-top: 4px; }
+.o-line .o-step button { width: 34px; height: 34px; font-size: 18px; }
+.o-total { display: flex; justify-content: space-between; align-items: baseline; padding: 18px 0 4px; }
+.o-total span:first-child { font-family: var(--board); font-weight: 700; text-transform: uppercase; letter-spacing: .16em; font-size: 13px; color: var(--ink-soft); }
+.o-total span:last-child { font-family: var(--display); font-style: italic; font-size: 40px; line-height: 1; }
+.o-sheet .field { margin-top: 18px; }
+.o-pay { display: grid; gap: 10px; margin-top: 8px; }
+.o-opt { display: flex; align-items: center; gap: 14px; text-align: left; width: 100%; border: 1px solid var(--ink); border-radius: 14px; padding: 14px 16px; background: rgba(255,255,255,.35); font: inherit; color: var(--ink); cursor: pointer; transition: background .15s, color .15s; }
+.o-opt b { display: block; font-family: var(--display); font-style: italic; font-weight: 500; font-size: 22px; line-height: 1.1; }
+.o-opt small { font-size: 14.5px; color: var(--ink-soft); }
+.o-opt .ic { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid currentColor; flex: none; position: relative; }
+.o-opt[aria-checked="true"] { background: var(--ink); color: var(--paper); }
+.o-opt[aria-checked="true"] small { color: var(--bronze-soft); }
+.o-opt[aria-checked="true"] .ic::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--mango); }
+.o-opt[disabled] { opacity: .45; cursor: not-allowed; }
+.o-soon { margin-left: auto; font-family: var(--board); font-weight: 700; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 999px; padding: 2px 9px; }
+.o-go { width: 100%; justify-content: center; margin-top: 24px; font-size: 19px; padding: .85em 1.4em; }
+.o-err { font-style: italic; color: var(--red); min-height: 1.4em; margin: 10px 0 0; }
+
+/* order status */
+.o-order { display: none; padding: clamp(28px, 5vw, 64px) 0 80px; }
+.o-order.show { display: block; }
+.o-order .wrap { max-width: 720px; }
+.o-hi { font-family: var(--display); font-style: italic; font-size: clamp(40px, 9vw, 72px); line-height: 1; margin: 6px 0 22px; }
+.o-pass { border: 1px solid rgba(57,24,15,.18); }
+.o-pass .pass-main { min-width: 0; }
+.o-fboard { --u: 11.6; --tmin: 18px; --tmax: 42px; margin: 10px 0 18px; box-shadow: 0 0 0 5px #1f0d08, 0 20px 40px -24px rgba(57,24,15,.6); }
+.o-msg { font-family: var(--display); font-style: italic; font-size: clamp(22px, 3vw, 28px); line-height: 1.25; margin: 0 0 14px; }
+.o-items { list-style: none; margin: 0; padding: 0; border-top: 1px dashed rgba(57,24,15,.3); font-size: 16.5px; }
+.o-items li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(57,24,15,.1); }
+.o-items li b { font-family: var(--board); letter-spacing: .04em; }
+.o-items li.tot { font-weight: 500; border-bottom: 0; }
+.o-stub-no { font-family: var(--board); font-weight: 700; font-size: clamp(44px, 9vw, 64px); line-height: 1; letter-spacing: .02em; }
+.o-paybox { margin-top: 26px; padding: clamp(20px, 3vw, 30px); background: #FFFCF6; border: 1px solid rgba(57,24,15,.16); border-radius: 14px; box-shadow: 0 24px 50px -34px rgba(57,24,15,.6); }
+.o-amt { font-family: var(--display); font-style: italic; font-size: clamp(48px, 10vw, 72px); line-height: 1; margin: 2px 0 16px; }
+.o-paybox .btn { width: 100%; justify-content: center; }
+.o-apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.o-apps .btn { font-size: 15px; padding: .6em .5em; }
+.o-copy { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 14px; border: 1px dashed var(--ink); border-radius: 10px; font-family: var(--board); font-weight: 700; letter-spacing: .04em; font-size: 16px; word-break: break-all; }
+.o-copy button { flex: none; border: 1px solid var(--ink); background: none; border-radius: 999px; padding: 5px 14px; font: inherit; font-family: var(--text); font-weight: 400; letter-spacing: 0; font-size: 15px; cursor: pointer; color: var(--ink); }
+.o-help { font-size: 15px; color: var(--ink-soft); margin: 12px 0 0; line-height: 1.5; }
+.o-paybox details { margin-top: 14px; }
+.o-paybox summary { cursor: pointer; font-size: 16px; text-decoration: underline; text-underline-offset: .2em; }
+#qr { display: grid; place-items: center; padding: 16px; background: #fff; margin-top: 10px; border-radius: 8px; }
+.o-paid { display: flex; align-items: center; gap: 12px; margin-top: 26px; padding: 16px 20px; border-radius: 14px; background: color-mix(in srgb, #3E8E4E 18%, var(--paper)); border: 1px solid #3E8E4E; font-family: var(--display); font-style: italic; font-size: 24px; }
+.o-paid i { width: 10px; height: 10px; border-radius: 50%; background: #3E8E4E; flex: none; }
+.o-back { margin-top: 26px; }
+.o-keep { font-size: 14px; color: var(--ink-soft); font-style: italic; margin-top: 18px; }
+.o-track { width: 100%; justify-content: space-between; margin: 0 0 22px; background: var(--mango); color: var(--ink); border-color: var(--mango); }
+
+.o-toast { position: fixed; left: 50%; top: 16px; z-index: 90; transform: translate(-50%, -160%); background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 999px; font-size: 16px; transition: transform .3s; }
+.o-toast.show { transform: translate(-50%, 0); }
+#beans { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 80; }
+.o-foot { text-align: center; font-size: 14px; color: var(--ink-soft); padding: 0 0 40px; }
+</style>
+</head>
+<body data-page="order">
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="0866° home"><img src="/assets/img/logo.png" alt="0866°" width="673" height="284"></a>
+    <div class="header-right">
+      <span class="open-pill" id="openPill"><i></i><span></span></span>
+      <a href="/" style="font-size:16px;text-decoration:none">← 0866.in</a>
+    </div>
+  </div>
+</header>
+<canvas id="beans"></canvas>
+<div class="o-toast" id="toast" role="status"></div>
+
+<main id="menuView">
+  <div class="ticker" id="ticker"></div>
+  <header class="page-head o-head">
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 200 200"><defs><path id="bc" d="M100 100 m-78 0 a78 78 0 1 1 156 0 a78 78 0 1 1 -156 0"/></defs>
+        <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text><textPath href="#bc" textLength="484" lengthAdjust="spacing">order ahead · gate 0866 · vijayawada · </textPath></text></svg>
+      <div class="core"><img src="/assets/img/bean.png" alt=""></div>
+    </div>
+    <div class="wrap">
+      <p class="kicker">order from your seat</p>
+      <h1>check in.</h1>
+      <p class="lede">pick your coffee, pay by upi or cash, and we'll call your number when it lands.</p>
+    </div>
+  </header>
+  <section style="padding-top:0;padding-bottom:0">
+    <div class="wrap">
+      <ol class="o-menu" id="menu">
+        <li class="o-skel"></li><li class="o-skel"></li><li class="o-skel"></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<section class="o-order" id="orderView"><div class="wrap" id="orderBox"></div></section>
+
+<div class="o-bar" id="bar"><button id="openCart"><span><span class="n" id="cnt">0</span>your order</span><span class="t" id="barTotal">₹0 →</span></button></div>
+
+<div class="o-scrim" id="scrim"></div>
+<aside class="o-sheet" id="sheet" role="dialog" aria-modal="true" aria-label="your order">
+  <div class="wrap">
+    <div class="o-grab"></div>
+    <div class="o-sheet-head"><h2>your order</h2><button class="o-x" id="closeCart">close</button></div>
+    <div id="lines"></div>
+    <div class="o-total"><span>total</span><span id="sheetTotal">₹0</span></div>
+
+    <div class="field"><label for="cname">your name, so we can call it</label>
+      <input id="cname" maxlength="40" autocomplete="given-name" placeholder="priya"></div>
+    <div class="field"><label for="cnote">anything we should know? (optional)</label>
+      <input id="cnote" maxlength="200" placeholder="less sweet, extra ice, oat milk…"></div>
+
+    <p class="kicker" style="margin:28px 0 10px">how you'll pay</p>
+    <div class="o-pay" role="radiogroup" aria-label="payment">
+      <button class="o-opt" role="radio" aria-checked="true" data-m="upi"><span class="ic"></span><span><b>upi</b><small>gpay, phonepe, paytm or any upi app</small></span></button>
+      <button class="o-opt" role="radio" aria-checked="false" data-m="cash"><span class="ic"></span><span><b>cash</b><small>pay at the counter when you collect</small></span></button>
+      <button class="o-opt" role="radio" aria-checked="false" disabled><span class="ic"></span><span><b>card</b><small>cards, netbanking, wallets</small></span><span class="o-soon">soon</span></button>
+    </div>
+    <button class="btn o-go" id="place">place order →</button>
+    <p class="o-err" id="err" role="alert"></p>
+  </div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
+const UPI_ID = "6303521185@ybl";
+const UPI_NAME = "0866";
+const POPS = ["tangerine", "caramel", "monsoon", "mango", "red", "bronze"];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rs = n => "₹" + Number(n).toLocaleString("en-IN");
+const pad = n => String(n).padStart(2, "0");
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const H = { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json" };
+async function rpc(fn, args){
+  const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: H, body: JSON.stringify(args) });
+  const t = await r.text(); let d; try { d = JSON.parse(t); } catch { d = t; }
+  if (!r.ok) throw new Error(((d && d.message) || "that didn't go through. try again?").toLowerCase());
+  return d;
+}
+function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
+
+/* header bits, same as the main site */
+(function openPill(){
+  const pill = $("#openPill");
+  const set = () => {
+    const now = new Date(Date.now() + (5.5 * 60 + new Date().getTimezoneOffset()) * 60000);
+    const m = now.getHours() * 60 + now.getMinutes(), open = m >= 450 && m < 1320;
+    pill.classList.toggle("open", open); pill.lastElementChild.textContent = open ? "open now" : "opens 7:30 am";
+  };
+  set(); setInterval(set, 60000);
+})();
+(function ticker(){
+  const items = ["now boarding", "order from your seat", "pay by upi or cash", "we'll call your number", "vijayawada 0866", "7:30 am to 10 pm, every day"];
+  const run = items.map(t => `<span>${t}<b>◆</b></span>`).join("");
+  $("#ticker").innerHTML = `<div class="ticker-track" aria-hidden="true">${run}${run}${run}${run}</div>`;
+})();
+
+/* split-flap board, same engine as the main site */
+const CH = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+function makeRow(lengths){
+  const row = document.createElement("div"); row.className = "board-row";
+  row._segs = lengths.map(n => { const seg = document.createElement("div"); seg.className = "seg"; const tiles = [];
+    for (let k = 0; k < n; k++){ const t = document.createElement("span"); t.className = "tile empty"; t.textContent = " "; seg.append(t); tiles.push(t); }
+    row.append(seg); return tiles; });
+  return row;
+}
+function setTile(t, ch){ t.textContent = ch === " " ? " " : ch; t.classList.toggle("empty", ch === " "); t.classList.remove("flip"); void t.offsetWidth; t.classList.add("flip"); }
+function flipRow(row, words){
+  row._segs.forEach((tiles, si) => {
+    const w = (words[si] || "").toUpperCase().padEnd(tiles.length, " ").slice(0, tiles.length);
+    tiles.forEach((t, i) => {
+      const target = w[i];
+      if (t.textContent === (target === " " ? " " : target)) return;
+      if (reduce) return setTile(t, target);
+      let n = target === " " ? 1 : 6 + (Math.random() * 4 | 0);
+      setTimeout(function step(){ if (n-- > 0){ setTile(t, CH[Math.random() * CH.length | 0]); setTimeout(step, 55 + Math.random() * 40); } else setTile(t, target); }, (si * 3 + i) * 28);
+    });
+  });
+}
+
+/* ---------- menu + cart ---------- */
+let menu = [], cart = store.get("0866_cart") || {}, method = "upi";
+
+async function loadMenu(){
+  try {
+    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag&order=sort.asc,created_at.asc`, { headers: H });
+    if (!r.ok) throw 0;
+    menu = await r.json();
+    for (const id in cart) if (!menu.find(m => m.id === id)) delete cart[id];
+    renderMenu(); renderCart();
+  } catch {
+    $("#menu").innerHTML = `<li class="o-item"><div><h3 class="o-name">the menu didn't load.</h3><p class="o-desc">check your connection and <a href="" class="textlink">try again</a>.</p></div></li>`;
+  }
+}
+function renderMenu(){
+  $("#menu").innerHTML = menu.map((m, i) => `
+    <li class="o-item pop-${POPS[i % POPS.length]}" data-id="${m.id}">
+      <div class="o-code">0866·${pad(i + 1)}${m.tag ? `<span class="o-tag">${esc(m.tag)}</span>` : ""}</div>
+      <div><h3 class="o-name">${esc(m.name)}</h3><p class="o-desc">${esc(m.description)}</p></div>
+      <div class="o-side"><span class="o-price">${rs(m.price)}</span><span class="ctl">${ctl(m.id)}</span></div>
+    </li>`).join("") || `<li class="o-item"><p class="o-desc">nothing on the menu right now.</p></li>`;
+}
+function ctl(id){
+  const q = cart[id] || 0;
+  return q ? `<span class="o-step"><button data-dec="${id}" aria-label="one less">−</button><b>${q}</b><button data-inc="${id}" aria-label="one more">+</button></span>`
+           : `<button class="btn ghost o-add" data-inc="${id}">add</button>`;
+}
+function setQty(id, q){
+  if (q <= 0) delete cart[id]; else cart[id] = Math.min(q, 20);
+  store.set("0866_cart", cart);
+  const row = document.querySelector(`.o-item[data-id="${id}"] .ctl`); if (row) row.innerHTML = ctl(id);
+  renderCart();
+}
+document.addEventListener("click", e => {
+  const inc = e.target.closest("[data-inc]"), dec = e.target.closest("[data-dec]");
+  if (inc){ const id = inc.dataset.inc; setQty(id, (cart[id] || 0) + 1);
+    const it = document.querySelector(`.o-item[data-id="${id}"]`);
+    if (it && !e.target.closest(".o-sheet")){ it.classList.remove("pop"); void it.offsetWidth; it.classList.add("pop"); }
+    const b = $("#bar"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump");
+    if (navigator.vibrate) navigator.vibrate(10);
+  }
+  if (dec){ const id = dec.dataset.dec; setQty(id, (cart[id] || 0) - 1); }
+});
+const lines = () => Object.entries(cart).map(([id, qty]) => ({ m: menu.find(x => x.id === id), qty })).filter(l => l.m);
+function renderCart(){
+  const L = lines(), count = L.reduce((a, l) => a + l.qty, 0), total = L.reduce((a, l) => a + l.qty * l.m.price, 0);
+  $("#cnt").textContent = count; $("#barTotal").textContent = rs(total) + " →"; $("#sheetTotal").textContent = rs(total);
+  $("#bar").classList.toggle("show", count > 0 && !$("#orderView").classList.contains("show"));
+  $("#lines").innerHTML = L.map(l => `
+    <div class="o-line"><span class="nm">${esc(l.m.name)}<small>${rs(l.m.price)} × ${l.qty} = ${rs(l.m.price * l.qty)}</small></span>
+      <span class="o-step"><button data-dec="${l.m.id}" aria-label="one less">−</button><b>${l.qty}</b><button data-inc="${l.m.id}" aria-label="one more">+</button></span></div>`).join("")
+    || `<p class="o-desc" style="padding:16px 0">nothing here yet.</p>`;
+  if (!count && $("#sheet").classList.contains("show")) closeSheet();
+}
+const openSheet = () => { $("#scrim").classList.add("show"); $("#sheet").classList.add("show"); $("#err").textContent = ""; };
+const closeSheet = () => { $("#scrim").classList.remove("show"); $("#sheet").classList.remove("show"); };
+$("#openCart").onclick = openSheet; $("#closeCart").onclick = closeSheet; $("#scrim").onclick = closeSheet;
+$("#cname").value = store.get("0866_name") || "";
+document.querySelectorAll(".o-opt[data-m]").forEach(o => o.onclick = () => {
+  method = o.dataset.m; document.querySelectorAll(".o-opt[data-m]").forEach(x => x.setAttribute("aria-checked", x === o));
+});
+
+$("#place").onclick = async () => {
+  const name = $("#cname").value.trim();
+  if (!name){ $("#err").textContent = "tell us your name, so we know whose coffee it is."; $("#cname").focus(); return; }
+  const items = lines().map(l => ({ id: l.m.id, qty: l.qty })); if (!items.length) return;
+  const btn = $("#place"); btn.disabled = true; btn.textContent = "sending to the counter…"; $("#err").textContent = "";
+  try {
+    const res = await rpc("place_order", { p_name: name, p_items: items, p_method: method, p_note: $("#cnote").value.trim() });
+    store.set("0866_name", name); cart = {}; store.set("0866_cart", cart); $("#cnote").value = ""; store.set("0866_order", res.id);
+    closeSheet(); renderMenu(); renderCart();
+    location.hash = "order=" + res.id; beans();
+  } catch (e) {
+    $("#err").textContent = e.message; if (/no longer available/.test(e.message)) loadMenu();
+  } finally { btn.disabled = false; btn.textContent = "place order →"; }
+};
+
+/* ---------- order status ---------- */
+let poll, last, rows;
+function upiLink(o, scheme){
+  const q = new URLSearchParams({ pa: UPI_ID, pn: UPI_NAME, am: Number(o.total).toFixed(2), cu: "INR", tn: `0866 order ${o.order_no}` }).toString().replace(/\+/g, "%20");
+  return { upi: "upi://pay?", gpay: "tez://upi/pay?", phonepe: "phonepe://pay?", paytm: "paytmmp://pay?" }[scheme] + q;
+}
+const STATUS = {
+  new:       ["RECEIVED",  "checked in. it's in the queue."],
+  preparing: ["BREWING",   "boarding. your coffee is being made."],
+  ready:     ["READY",     "landed. come get it at the counter."],
+  done:      ["COLLECTED", "enjoy it. see you tomorrow."],
+  cancelled: ["CANCELLED", "this order was cancelled. please talk to us at the counter."]
+};
+async function showOrder(id){
+  $("#menuView").style.display = "none"; $("#orderView").classList.add("show"); renderCart(); scrollTo(0, 0);
+  clearInterval(poll); last = null; rows = null;
+  const tick = async () => {
+    try {
+      const o = await rpc("get_order", { p_id: id });
+      if (!o){ $("#orderBox").innerHTML = `<p class="o-hi">we couldn't find that order.</p><button class="btn ghost" onclick="backToMenu()">← back to the menu</button>`; clearInterval(poll); return; }
+      renderOrder(o); if (["done", "cancelled"].includes(o.status)) clearInterval(poll);
+    } catch {}
+  };
+  await tick(); poll = setInterval(tick, 5000);
+}
+function renderOrder(o){
+  const [word, msg] = STATUS[o.status] || STATUS.new;
+  if (last && last !== "ready" && o.status === "ready"){ if (navigator.vibrate) navigator.vibrate([200, 100, 200]); beans(); }
+  const key = o.status + o.payment_status;
+  if (last === key){ return; }
+  const firstPaint = !rows; last = key;
+  let pay = "";
+  if (o.payment_status === "paid") pay = `<div class="o-paid"><i></i>paid. thank you.</div>`;
+  else if (o.status === "cancelled") pay = "";
+  else if (o.payment_method === "cash") pay = `<div class="o-paybox"><p class="kicker">pay at the counter</p><div class="o-amt">${rs(o.total)}</div><p class="o-help" style="margin:0">cash when you collect. show order <b>${pad(o.order_no)}</b> when you pay.</p></div>`;
+  else pay = `<div class="o-paybox"><p class="kicker">pay by upi</p><div class="o-amt">${rs(o.total)}</div>
+      <a class="btn" href="${upiLink(o, "upi")}">pay ${rs(o.total)} with upi →</a>
+      <div class="o-apps"><a class="btn ghost" href="${upiLink(o, "gpay")}">gpay</a><a class="btn ghost" href="${upiLink(o, "phonepe")}">phonepe</a><a class="btn ghost" href="${upiLink(o, "paytm")}">paytm</a></div>
+      <div class="o-copy"><span>${UPI_ID}</span><button onclick="copyUpi()">copy</button></div>
+      <p class="o-help">if the button doesn't open your app, copy the upi id and pay <b>${rs(o.total)}</b> with the note <b>${pad(o.order_no)}</b>. this page updates once the counter confirms it.</p>
+      <details><summary>paying from someone else's phone? show a qr</summary><div id="qr"></div></details></div>`;
+  $("#orderBox").innerHTML = `
+    <p class="kicker">order ${pad(o.order_no)} · ${o.payment_method === "upi" ? "upi" : "cash"}</p>
+    <p class="o-hi">hi ${esc(o.customer_name)}.</p>
+    <div class="pass o-pass">
+      <div class="pass-main">
+        <div class="pass-label">flight status</div>
+        <div class="board o-fboard" id="fboard"><div class="board-top"><span class="board-title">departures</span></div></div>
+        <p class="o-msg">${msg}</p>
+        <ul class="o-items">${o.items.map(i => `<li><span>${esc(i.name)} × ${i.qty}</span><b>${rs(i.price * i.qty)}</b></li>`).join("")}
+          <li class="tot"><span>total</span><b>${rs(o.total)}</b></li></ul>
+      </div>
+      <div class="pass-stub">
+        <div><div class="pass-label">order no.</div><div class="o-stub-no">${pad(o.order_no)}</div></div>
+        <div class="barcode"></div>
+      </div>
+    </div>
+    ${pay}
+    <button class="btn ghost o-back" onclick="backToMenu()">← order something else</button>
+    <p class="o-keep">keep this page open. it updates on its own.</p>`;
+  const fb = $("#fboard");
+  rows = [makeRow([5, 3]), makeRow([9])]; rows.forEach(r => fb.append(r));
+  if (firstPaint) { flipRow(rows[0], ["ORDER", pad(o.order_no)]); setTimeout(() => flipRow(rows[1], [word]), 350); }
+  else { rows[0]._segs.flat().forEach((t, i) => setTile(t, ("ORDER" + pad(o.order_no).padEnd(3, " "))[i] || " ")); flipRow(rows[1], [word]); }
+  const qr = document.getElementById("qr");
+  if (qr && window.QRCode) new QRCode(qr, { text: upiLink(o, "upi"), width: 200, height: 200, colorDark: "#39180F", correctLevel: QRCode.CorrectLevel.M });
+}
+function copyUpi(){ (navigator.clipboard ? navigator.clipboard.writeText(UPI_ID) : Promise.reject()).then(() => toast("upi id copied"), () => toast(UPI_ID)); }
+function backToMenu(){ clearInterval(poll); history.replaceState(null, "", location.pathname); route(); }
+function route(){
+  const m = location.hash.match(/order=([0-9a-f-]{36})/);
+  if (m) showOrder(m[1]);
+  else { $("#orderView").classList.remove("show"); $("#menuView").style.display = ""; renderCart(); }
+}
+addEventListener("hashchange", route);
+
+/* a little shower of beans */
+function beans(){
+  if (reduce) return;
+  const c = $("#beans"), x = c.getContext("2d"), dpr = devicePixelRatio || 1; c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["#39180F", "#6E1A14", "#A8783A", "#D9732B", "#E2B33C"];
+  const P = Array.from({ length: 70 }, () => ({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * .6, vy: 2 + Math.random() * 3, vx: (Math.random() - .5) * 1.2, r: Math.random() * 6, vr: (Math.random() - .5) * .12, s: 7 + Math.random() * 6, c: cols[Math.random() * cols.length | 0] }));
+  let f = 0;
+  (function draw(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    P.forEach(p => { p.vy += .06; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c;
+      x.beginPath(); x.ellipse(0, 0, p.s * .72, p.s, 0, 0, 7); x.fill();
+      x.strokeStyle = "#F1EADB"; x.lineWidth = 1.4; x.beginPath(); x.moveTo(p.s * .1, -p.s * .8); x.quadraticCurveTo(-p.s * .35, 0, p.s * .1, p.s * .8); x.stroke(); x.restore(); });
+    if (++f < 200) requestAnimationFrame(draw); else x.clearRect(0, 0, innerWidth, innerHeight);
+  })();
+}
+
+loadMenu();
+if (!location.hash && store.get("0866_order")) {
+  rpc("get_order", { p_id: store.get("0866_order") }).then(o => {
+    if (o && !["done", "cancelled"].includes(o.status) && (Date.now() - new Date(o.created_at)) < 6 * 3600e3) {
+      const b = document.createElement("button"); b.className = "btn o-track";
+      b.innerHTML = `<span>track order ${pad(o.order_no)}</span><span>→</span>`;
+      b.onclick = () => location.hash = "order=" + o.id;
+      $("#menu").before(b);
+    }
+  }).catch(() => {});
+}
+route();
+</script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#39180F">
+<link rel="icon" href="/assets/img/bean.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<title>counter — 0866°</title>
+<style>
+button { text-transform: inherit; }
+input { text-transform: none; }
+body { font-size: 17px; }
+.s-top { position: sticky; top: 0; z-index: 40; background: var(--ink); color: var(--paper); }
+.s-top .wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; min-height: 64px; padding-top: 8px; padding-bottom: 8px; }
+.s-top img { height: 26px; width: auto; }
+.s-top .lbl { font-family: var(--board); font-weight: 700; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; color: var(--bronze-soft); }
+.s-live { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--bronze-soft); }
+.s-live i { width: 8px; height: 8px; border-radius: 50%; background: #5DBB6E; box-shadow: 0 0 0 0 rgba(93,187,110,.5); animation: pulse 2s infinite; }
+.s-live.off i { background: var(--tangerine); animation: none; }
+.s-tabs { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.s-tabs button { border: 1px solid rgba(241,234,219,.5); background: none; color: var(--paper); border-radius: 999px; padding: 7px 16px; font: inherit; font-size: 15px; cursor: pointer; }
+.s-tabs button.on { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+main { padding: 22px 0 60px; }
+.s-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border-top: 1px solid var(--bronze-soft); border-bottom: 1px solid var(--bronze-soft); margin-bottom: 18px; }
+.s-stat { padding: 12px 16px 14px 0; }
+.s-stat + .s-stat { border-left: 1px solid rgba(201,165,116,.6); padding-left: 16px; }
+.s-stat .k { font-family: var(--board); font-weight: 700; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+.s-stat .v { font-family: var(--display); font-style: italic; font-size: 34px; line-height: 1.1; }
+.s-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.s-filters button { border: 1px solid var(--ink); background: none; color: var(--ink); border-radius: 999px; padding: 6px 16px; font: inherit; font-size: 15px; cursor: pointer; }
+.s-filters button.on { background: var(--ink); color: var(--paper); }
+.s-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.s-card { background: #FFFCF6; border: 1px solid rgba(57,24,15,.16); border-radius: 14px; padding: 16px 18px 14px; box-shadow: 0 18px 40px -28px rgba(57,24,15,.55); position: relative; overflow: hidden; }
+.s-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c, var(--bronze)); }
+.s-card.new { --c: var(--mango); animation: s-flash 1s ease 3; }
+.s-card.preparing { --c: var(--monsoon); }
+.s-card.ready { --c: #3E8E4E; background: color-mix(in srgb, #3E8E4E 8%, #FFFCF6); }
+.s-card.done, .s-card.cancelled { opacity: .55; box-shadow: none; --c: var(--ink-soft); }
+@keyframes s-flash { 50% { box-shadow: 0 0 0 5px var(--mango); } }
+.s-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.s-no { font-family: var(--board); font-weight: 700; font-size: 46px; line-height: .95; letter-spacing: .01em; }
+.s-who { font-family: var(--display); font-style: italic; font-size: 24px; line-height: 1.1; margin-top: 4px; word-break: break-word; }
+.s-ago { font-size: 14px; color: var(--ink-soft); text-align: right; }
+.s-st { display: inline-block; margin-top: 8px; font-family: var(--board); font-weight: 700; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--c, var(--ink)); color: color-mix(in srgb, var(--c, var(--ink)) 80%, var(--ink)); }
+.s-items { list-style: none; margin: 12px 0; padding: 8px 0; border-top: 1px dashed rgba(57,24,15,.3); border-bottom: 1px dashed rgba(57,24,15,.3); }
+.s-items li { display: flex; justify-content: space-between; font-size: 18px; padding: 3px 0; }
+.s-items b { font-family: var(--board); font-size: 19px; }
+.s-note { background: color-mix(in srgb, var(--mango) 35%, #FFFCF6); border-left: 3px solid var(--mango); padding: 6px 10px; margin-bottom: 12px; font-style: italic; word-break: break-word; }
+.s-pay { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.s-amt { font-family: var(--display); font-style: italic; font-size: 30px; line-height: 1; }
+.s-pm { font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin-top: 4px; }
+.s-paid { font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #2F6E3B; border: 1.5px solid #3E8E4E; border-radius: 999px; padding: 6px 14px; }
+.s-card .btn { font-size: 16px; }
+.s-markpaid { background: #3E8E4E; border-color: #3E8E4E; }
+.s-next { width: 100%; justify-content: center; margin-top: 12px; font-size: 18px !important; padding: .8em 1em; }
+.s-foot { display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px; }
+.s-foot button { background: none; border: 0; padding: 0; font: inherit; color: var(--ink-soft); text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
+.s-empty { grid-column: 1 / -1; text-align: center; padding: 70px 10px; }
+.s-empty p { font-family: var(--display); font-style: italic; font-size: 30px; margin: 0; }
+
+.s-login { max-width: 380px; margin: 14vh auto 0; padding: 0 20px; text-align: center; }
+.s-login img { width: 220px; margin: 0 auto 10px; }
+.s-pin { width: 100%; text-align: center; font: 700 26px var(--board) !important; letter-spacing: .3em; }
+.s-err { font-style: italic; color: var(--red); min-height: 1.5em; margin-top: 10px; }
+
+.s-mi { background: #FFFCF6; border: 1px solid rgba(57,24,15,.16); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 120px; gap: 4px 16px; }
+.s-mi.off { opacity: .6; }
+.s-mi .full { grid-column: 1 / -1; display: flex; gap: 16px; flex-wrap: wrap; }
+.s-mi .full .field { flex: 1; min-width: 160px; }
+.s-mi .field input { font-size: 17px; padding: 6px 2px; }
+.s-mi .act { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.s-tog { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.s-tog input { width: 20px; height: 20px; accent-color: var(--ink); }
+.s-sort { width: 64px; margin-left: auto; font: inherit; border: 0; border-bottom: 1.5px solid var(--ink); background: rgba(255,255,255,.35); padding: 4px; }
+.s-toast { position: fixed; left: 50%; bottom: 20px; z-index: 90; transform: translate(-50%, 180%); background: var(--ink); color: var(--paper); padding: 12px 20px; border-radius: 999px; transition: transform .3s; }
+.s-toast.show { transform: translate(-50%, 0); }
+.s-unlock { position: fixed; inset: 0; z-index: 100; background: rgba(57,24,15,.92); color: var(--paper); display: none; place-items: center; text-align: center; padding: 20px; cursor: pointer; }
+.s-unlock.show { display: grid; }
+.s-unlock p { font-family: var(--display); font-style: italic; font-size: clamp(34px, 6vw, 56px); margin: 0 0 8px; }
+.s-unlock small { color: var(--bronze-soft); font-size: 16px; }
+@media (max-width: 520px) { .s-mi { grid-template-columns: 1fr 96px; } .s-tabs { margin-left: 0; } }
+</style>
+</head>
+<body>
+<div class="s-toast" id="toast" role="status"></div>
+<div class="s-unlock" id="unlock"><div><p>tap anywhere to start.</p><small>this turns on the new-order chime.</small></div></div>
+
+<section class="s-login" id="login" style="padding:0">
+  <img src="/assets/img/logo.png" alt="0866°">
+  <p class="kicker" style="justify-content:center">counter · staff only</p>
+  <div class="field"><input class="s-pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="pin" aria-label="staff pin"></div>
+  <button class="btn" id="go" style="width:100%;justify-content:center;margin-top:18px">open orders</button>
+  <p class="s-err" id="lerr"></p>
+</section>
+
+<div id="app" style="display:none">
+  <header class="s-top">
+    <div class="wrap">
+      <img src="/assets/img/logo-cream.png" alt="0866°">
+      <span class="lbl">counter</span>
+      <span class="s-live" id="live"><i></i><span>live</span></span>
+      <nav class="s-tabs">
+        <button class="on" data-tab="orders">orders</button>
+        <button data-tab="menu">menu &amp; prices</button>
+        <button data-tab="settings">settings</button>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <section id="t-orders" style="padding:0">
+        <div class="s-stats" id="stats"></div>
+        <div class="s-filters" id="filters">
+          <button class="on" data-f="active">active</button>
+          <button data-f="unpaid">unpaid</button>
+          <button data-f="done">completed</button>
+          <button data-f="all">all today</button>
+        </div>
+        <div class="s-grid" id="grid"></div>
+      </section>
+
+      <section id="t-menu" style="display:none;padding:0;max-width:760px">
+        <h2>menu &amp; prices</h2>
+        <p class="quiet">changes show on the order page straight away. untick available when something runs out.</p>
+        <div id="mlist"></div>
+        <h3 style="margin-top:34px">add a new item</h3>
+        <div id="mnew"></div>
+      </section>
+
+      <section id="t-settings" style="display:none;padding:0;max-width:440px">
+        <h2>settings</h2>
+        <div class="field"><label for="newpin">new staff pin (6 or more digits)</label><input id="newpin" type="password" inputmode="numeric"></div>
+        <button class="btn" id="savepin" style="margin-top:16px">save new pin</button>
+        <h3 style="margin-top:40px">this device</h3>
+        <div class="btn-row"><button class="btn ghost" id="test">test the chime</button><button class="btn ghost" id="logout">log out</button></div>
+        <p class="quiet" style="margin-top:28px;font-size:15px">customer page: <a class="textlink" href="/order/">0866.in/order</a></p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rs = n => "₹" + Number(n).toLocaleString("en-IN");
+const pad = n => String(n).padStart(2, "0");
+const ls = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} }, del(k){ try { localStorage.removeItem(k); } catch {} } };
+async function rpc(fn, args){
+  const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json" }, body: JSON.stringify(args) });
+  const t = await r.text(); let d; try { d = JSON.parse(t); } catch { d = t; }
+  if (!r.ok) throw new Error(((d && d.message) || "network error").toLowerCase());
+  return d;
+}
+function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2400); }
+
+let PIN = ls.get("0866_pin"), orders = [], seen = null, filter = "active", timer, actx;
+
+function chime(){
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    [0, .18, .36].forEach((t, i) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = "triangle"; o.frequency.value = [880, 1175, 1568][i];
+      g.gain.setValueAtTime(.0001, actx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(.5, actx.currentTime + t + .02);
+      g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + t + .25);
+      o.connect(g).connect(actx.destination); o.start(actx.currentTime + t); o.stop(actx.currentTime + t + .3);
+    });
+  } catch {}
+  if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
+}
+async function keepAwake(){ try { await navigator.wakeLock.request("screen"); } catch {} }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && PIN) { keepAwake(); refresh(); } });
+
+async function login(pin, silent){
+  $("#lerr").textContent = silent ? "" : "checking…";
+  try {
+    const ok = await rpc("staff_check", { p_pin: pin });
+    if (!ok) { $("#lerr").textContent = "that pin isn't right."; ls.del("0866_pin"); PIN = null; return false; }
+    PIN = pin; ls.set("0866_pin", pin);
+    $("#login").style.display = "none"; $("#app").style.display = "";
+    keepAwake(); refresh(); clearInterval(timer); timer = setInterval(refresh, 4000);
+    return true;
+  } catch (e) { $("#lerr").textContent = e.message; return false; }
+}
+$("#go").onclick = () => { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); login($("#pin").value.trim()); };
+$("#pin").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
+function logout(){ clearInterval(timer); ls.del("0866_pin"); PIN = null; location.reload(); }
+$("#logout").onclick = logout;
+
+document.querySelectorAll(".s-tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".s-tabs button").forEach(x => x.classList.toggle("on", x === b));
+  ["orders", "menu", "settings"].forEach(t => $("#t-" + t).style.display = t === b.dataset.tab ? "" : "none");
+  if (b.dataset.tab === "menu") loadMenu();
+});
+document.querySelectorAll("#filters button").forEach(b => b.onclick = () => {
+  filter = b.dataset.f; document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("on", x === b)); render();
+});
+
+async function refresh(){
+  if (!PIN) return;
+  try {
+    orders = await rpc("staff_orders", { p_pin: PIN, p_days: 1 });
+    $("#live").classList.remove("off"); $("#live").lastElementChild.textContent = "live";
+    const ids = new Set(orders.map(o => o.id));
+    if (seen) { const fresh = orders.filter(o => !seen.has(o.id));
+      if (fresh.length) { chime(); toast(`new order ${pad(fresh[0].order_no)} · ${fresh[0].customer_name.toLowerCase()}`); document.title = "new order — 0866°"; setTimeout(() => document.title = "counter — 0866°", 6000); } }
+    seen = ids; render();
+  } catch (e) {
+    if (/wrong pin/.test(e.message)) { logout(); return; }
+    $("#live").classList.add("off"); $("#live").lastElementChild.textContent = "reconnecting…";
+  }
+}
+function ago(ts){ const s = (Date.now() - new Date(ts)) / 1000; if (s < 60) return "just now"; if (s < 3600) return Math.floor(s / 60) + " min ago"; return new Date(ts).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).toLowerCase(); }
+const NEXT = { new: ["preparing", "start making"], preparing: ["ready", "mark ready"], ready: ["done", "picked up"] };
+const LABEL = { new: "new", preparing: "making", ready: "ready", done: "picked up", cancelled: "cancelled" };
+function render(){
+  const live = orders.filter(o => o.status !== "cancelled"), paid = live.filter(o => o.payment_status === "paid");
+  const sum = a => a.reduce((t, o) => t + o.total, 0);
+  $("#stats").innerHTML = [["orders today", live.length], ["collected", rs(sum(paid))], ["upi", rs(sum(paid.filter(o => o.payment_method === "upi")))],
+    ["cash", rs(sum(paid.filter(o => o.payment_method === "cash")))], ["unpaid", rs(sum(live.filter(o => o.payment_status !== "paid")))]]
+    .map(([k, v]) => `<div class="s-stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  let list = orders;
+  if (filter === "active") list = orders.filter(o => ["new", "preparing", "ready"].includes(o.status)).reverse();
+  if (filter === "unpaid") list = orders.filter(o => o.payment_status !== "paid" && o.status !== "cancelled");
+  if (filter === "done") list = orders.filter(o => ["done", "cancelled"].includes(o.status));
+  $("#grid").innerHTML = list.map(o => `
+    <article class="s-card ${o.status}">
+      <div class="s-row">
+        <div><div class="s-no">${pad(o.order_no)}</div><div class="s-who">${esc(o.customer_name)}</div><span class="s-st">${LABEL[o.status]}</span></div>
+        <div class="s-ago">${ago(o.created_at)}</div>
+      </div>
+      <ul class="s-items">${o.items.map(i => `<li><span>${esc(i.name)}</span><b>× ${i.qty}</b></li>`).join("")}</ul>
+      ${o.note ? `<div class="s-note">${esc(o.note)}</div>` : ""}
+      <div class="s-pay">
+        <div><div class="s-amt">${rs(o.total)}</div><div class="s-pm">${o.payment_method}</div></div>
+        ${o.payment_status === "paid" ? `<span class="s-paid">paid</span>` : (o.status === "cancelled" ? "" : `<button class="btn s-markpaid" data-pay="${o.id}">mark paid</button>`)}
+      </div>
+      ${NEXT[o.status] ? `<button class="btn s-next" data-st="${o.id}" data-to="${NEXT[o.status][0]}">${NEXT[o.status][1]} →</button>` : ""}
+      <div class="s-foot">
+        ${o.payment_status === "paid" && o.status !== "cancelled" ? `<button data-unpay="${o.id}">undo paid</button>` : "<span></span>"}
+        ${["new", "preparing", "ready"].includes(o.status) ? `<button data-cancel="${o.id}">cancel order</button>` : (o.status === "done" ? `<button data-st="${o.id}" data-to="ready">move back</button>` : "")}
+      </div>
+    </article>`).join("") || `<div class="s-empty"><p>${filter === "active" ? "all quiet. waiting for the next one." : "nothing here yet."}</p></div>`;
+}
+async function act(id, st, ps, el){
+  if (el) el.disabled = true;
+  const o = orders.find(x => x.id === id); if (o) { if (st) o.status = st; if (ps) o.payment_status = ps; render(); }
+  try { await rpc("staff_update_order", { p_pin: PIN, p_id: id, p_status: st, p_payment_status: ps }); }
+  catch (e) { toast("couldn't save: " + e.message); }
+  refresh();
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.pay) act(t.dataset.pay, null, "paid", t);
+  if (t.dataset.unpay && confirm("mark this order as not paid?")) act(t.dataset.unpay, null, "pending", t);
+  if (t.dataset.st) act(t.dataset.st, t.dataset.to, null, t);
+  if (t.dataset.cancel && confirm("cancel this order?")) act(t.dataset.cancel, "cancelled", null, t);
+});
+setInterval(() => { if ($("#t-orders").style.display !== "none") render(); }, 30000);
+
+function itemForm(m){
+  m = m || { id: "", emoji: "☕", name: "", price: "", description: "", tag: "", available: true, sort: 99 };
+  return `<div class="s-mi ${m.available ? "" : "off"}" data-id="${m.id}">
+    <div class="field"><label>name</label><input value="${esc(m.name)}" data-k="name"></div>
+    <div class="field"><label>price (₹)</label><input value="${m.price}" data-k="price" type="number" inputmode="numeric" min="0"></div>
+    <div class="full">
+      <div class="field"><label>description</label><input value="${esc(m.description)}" data-k="description"></div>
+      <div class="field" style="max-width:180px"><label>tag (optional)</label><input value="${esc(m.tag)}" data-k="tag"></div>
+    </div>
+    <input type="hidden" value="${esc(m.emoji)}" data-k="emoji">
+    <div class="act">
+      <label class="s-tog"><input type="checkbox" data-k="available" ${m.available ? "checked" : ""}> available</label>
+      <input class="s-sort" value="${m.sort}" data-k="sort" type="number" aria-label="position on menu" title="position on menu">
+      <button class="btn" data-save>${m.id ? "save" : "add to menu"}</button>
+      ${m.id ? `<button class="btn ghost" data-del>remove</button>` : ""}
+    </div>
+  </div>`;
+}
+async function loadMenu(){
+  try { const items = await rpc("staff_menu", { p_pin: PIN }); $("#mlist").innerHTML = items.map(itemForm).join(""); $("#mnew").innerHTML = itemForm(null); }
+  catch (e) { toast(e.message); }
+}
+document.addEventListener("click", async e => {
+  const save = e.target.closest("[data-save]"), del = e.target.closest("[data-del]");
+  if (!save && !del) return;
+  const box = e.target.closest(".s-mi"), id = box.dataset.id;
+  if (del) {
+    if (!confirm("remove this from the menu?")) return;
+    try { await rpc("staff_archive_item", { p_pin: PIN, p_id: id }); toast("removed"); loadMenu(); } catch (err) { toast(err.message); }
+    return;
+  }
+  const it = { id };
+  box.querySelectorAll("[data-k]").forEach(i => it[i.dataset.k] = i.type === "checkbox" ? i.checked : i.value.trim());
+  if (!it.name || it.price === "" || isNaN(+it.price)) { toast("name and price are needed"); return; }
+  it.price = Math.round(+it.price); it.sort = parseInt(it.sort) || 99;
+  save.disabled = true;
+  try { await rpc("staff_save_item", { p_pin: PIN, p_item: it }); toast(id ? "saved" : "added"); loadMenu(); }
+  catch (err) { toast(err.message); save.disabled = false; }
+});
+
+$("#savepin").onclick = async () => {
+  const n = $("#newpin").value.trim();
+  if (!/^\d{6,}$/.test(n)) { toast("use 6 or more digits"); return; }
+  try { await rpc("staff_change_pin", { p_pin: PIN, p_new: n }); PIN = n; ls.set("0866_pin", n); $("#newpin").value = ""; toast("pin changed. use it on other devices too."); }
+  catch (e) { toast(e.message); }
+};
+$("#test").onclick = chime;
+
+if (PIN) {
+  $("#login").style.display = "none"; $("#unlock").classList.add("show");
+  $("#unlock").onclick = () => { actx = new (window.AudioContext || window.webkitAudioContext)(); $("#unlock").classList.remove("show");
+    login(PIN, true).then(ok => { if (!ok) $("#login").style.display = ""; }); };
+}
+</script>
+</body>
+</html>
