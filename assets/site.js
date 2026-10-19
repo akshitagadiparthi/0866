@@ -41,6 +41,7 @@
           ${NAV.map(([h, l, k]) => `<a href="${h}"${k === page ? ' aria-current="page"' : ""}>${l}</a>`).join("")}
         </nav>
         <span class="open-pill" id="openPill"><i></i><span></span></span>
+        <a class="btn" href="order/" style="font-size:15px;padding:.45em 1.15em">order</a>
         <button class="menu-toggle" aria-expanded="false" aria-controls="nav">menu</button>
       </div>
     </div>`;

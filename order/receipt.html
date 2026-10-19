@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F1EADB">
+<link rel="icon" href="/assets/img/bean.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400;1,6..96,500;1,6..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<title>receipt — 0866°</title>
+<meta name="description" content="your receipt from 0866°, vijayawada.">
+<style>
+button { text-transform: inherit; }
+main { padding: clamp(28px, 6vw, 64px) 0 70px; }
+.r-wrap { max-width: 460px; margin: 0 auto; padding: 0 20px; }
+.r-paper { position: relative; background: #FFFCF6; color: var(--ink); padding: 34px 28px 30px; box-shadow: 0 30px 60px -34px rgba(57,24,15,.6);
+  /* torn edges, top and bottom */
+  --t: 10px;
+  -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(var(--t) * 2) var(--t) repeat-x,
+                conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--t) * 2) var(--t) repeat-x,
+                linear-gradient(#000 0 0) center / 100% calc(100% - var(--t) * 2) no-repeat;
+          mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(var(--t) * 2) var(--t) repeat-x,
+                conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--t) * 2) var(--t) repeat-x,
+                linear-gradient(#000 0 0) center / 100% calc(100% - var(--t) * 2) no-repeat; }
+.r-logo { width: 170px; margin: 6px auto 4px; }
+.r-addr { text-align: center; font-size: 14px; color: var(--ink-soft); line-height: 1.45; margin: 0; }
+.r-cut { border: 0; border-top: 1.5px dashed rgba(57,24,15,.35); margin: 20px 0; }
+.r-k { font-family: var(--board); font-weight: 700; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+.r-title { text-align: center; font-family: var(--display); font-style: italic; font-size: 40px; line-height: 1; margin: 2px 0 6px; }
+.r-meta { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 15.5px; margin: 0; }
+.r-meta dt { color: var(--ink-soft); }
+.r-meta dd { margin: 0; text-align: right; font-family: var(--board); font-weight: 700; letter-spacing: .03em; text-transform: none; }
+.r-items { list-style: none; margin: 0; padding: 0; }
+.r-items li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 8px 0; }
+.r-items .n { font-size: 17px; }
+.r-items .q { grid-column: 1; font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .04em; color: var(--ink-soft); text-transform: none; }
+.r-items .a { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-family: var(--board); font-weight: 700; font-size: 17px; }
+.r-sz { text-transform: uppercase; font-family: var(--board); font-weight: 700; font-size: .85em; letter-spacing: .06em; }
+.r-total { display: flex; justify-content: space-between; align-items: baseline; }
+.r-total span:last-child { font-family: var(--display); font-style: italic; font-size: 46px; line-height: 1; }
+.r-stampwrap { text-align: center; margin: 6px 0 4px; }
+.r-stamp { display: inline-block; transform: rotate(-6deg); border: 3px solid currentColor; border-radius: 10px; padding: 6px 14px 4px; font-family: var(--board); font-weight: 700; font-size: 26px; letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+.r-stamp.paid { color: #2F7A3E; }
+.r-stamp.unpaid { color: var(--tangerine); font-size: 16px; }
+.r-stamp.cancelled { color: var(--red); }
+.r-note { text-align: center; font-family: var(--display); font-style: italic; font-size: 19px; line-height: 1.35; margin: 4px 0 0; }
+.r-small { text-align: center; font-size: 13px; color: var(--ink-soft); margin: 14px 0 0; line-height: 1.5; }
+.barcode { height: 46px; margin: 18px 10px 0; }
+.r-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 26px; }
+.r-msg { text-align: center; font-family: var(--display); font-style: italic; font-size: 26px; margin-top: 30vh; }
+@media print {
+  body::before, body::after, .r-actions, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { padding: 0; }
+  .r-paper { box-shadow: none; -webkit-mask: none; mask: none; }
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="r-wrap" id="box"><p class="r-msg">finding your receipt…</p></div>
+</main>
+<script>
+const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rs = n => "₹" + Number(n).toLocaleString("en-IN");
+const pad = n => String(n).padStart(2, "0");
+const ist = ts => new Date(ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }).toLowerCase();
+const id = new URLSearchParams(location.search).get("id") || "";
+let last = "";
+
+async function load(){
+  if (!/^[0-9a-f-]{36}$/.test(id)) { $("#box").innerHTML = `<p class="r-msg">this receipt link isn't complete.</p>`; return; }
+  try {
+    const r = await fetch(`${SB}/rest/v1/rpc/get_order`, { method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json" }, body: JSON.stringify({ p_id: id }) });
+    const o = await r.json();
+    if (!r.ok || !o) { $("#box").innerHTML = `<p class="r-msg">we couldn't find that receipt.</p>`; return; }
+    const key = o.status + o.payment_status;
+    if (key !== last) { last = key; render(o); }
+  } catch { if (!last) $("#box").innerHTML = `<p class="r-msg">couldn't load. check your connection and refresh.</p>`; }
+}
+function render(o){
+  const paid = o.payment_status === "paid", cancelled = o.status === "cancelled";
+  document.title = `receipt ${o.receipt_no || ""} — 0866°`;
+  $("#box").innerHTML = `
+    <article class="r-paper">
+      <img class="r-logo" src="/assets/img/logo.png" alt="0866°" width="673" height="284">
+      <p class="r-addr">brindavan colony, sri ram nagar<br>off benz circle, vijayawada<br>99088 09323 · 0866.in</p>
+      <hr class="r-cut">
+      <div class="r-k" style="text-align:center">receipt</div>
+      <p class="r-title">order ${pad(o.order_no)}</p>
+      <div class="r-stampwrap">${cancelled ? `<span class="r-stamp cancelled">cancelled</span>` : paid ? `<span class="r-stamp paid">paid</span>` : `<span class="r-stamp unpaid">awaiting payment</span>`}</div>
+      <dl class="r-meta" style="margin-top:14px">
+        <dt>receipt no.</dt><dd>${esc(o.receipt_no || "")}</dd>
+        <dt>ordered</dt><dd>${ist(o.created_at)}</dd>
+        <dt>name</dt><dd>${esc(o.customer_name)}</dd>
+      </dl>
+      <hr class="r-cut">
+      <ul class="r-items">${o.items.map(i => `
+        <li><span class="n">${esc(i.name)}${i.size ? ` · <span class="r-sz">${esc(i.size)}</span>` : ""}</span>
+          <span class="q">${i.qty} × ${rs(i.price)}</span><span class="a">${rs(i.price * i.qty)}</span></li>`).join("")}</ul>
+      <hr class="r-cut">
+      <div class="r-total"><span class="r-k">total</span><span>${rs(o.total)}</span></div>
+      <dl class="r-meta" style="margin-top:16px">
+        <dt>payment</dt><dd>${o.payment_method === "upi" ? "UPI" : "cash"}</dd>
+        <dt>status</dt><dd>${cancelled ? "cancelled" : paid ? "paid" : "awaiting payment"}</dd>
+        ${paid && o.paid_at ? `<dt>paid</dt><dd>${ist(o.paid_at)}</dd>` : ""}
+        ${o.utr ? `<dt>upi ref.</dt><dd>${esc(o.utr)}</dd>` : ""}
+      </dl>
+      <hr class="r-cut">
+      <p class="r-note">${cancelled ? "this order was cancelled." : "thank you for coming in. see you tomorrow."}</p>
+      <div class="barcode" aria-hidden="true"></div>
+      <p class="r-small">zero eight double six · coffee, mostly cold.${paid ? "" : "<br>this receipt updates on its own once payment is confirmed."}</p>
+    </article>
+    <div class="r-actions">
+      <button class="btn" onclick="print()">save as pdf</button>
+      ${navigator.share ? `<button class="btn ghost" onclick="navigator.share({ title: 'my 0866° receipt', url: location.href }).catch(() => {})">share</button>` : ""}
+      <a class="btn ghost" href="/order/">order again</a>
+    </div>`;
+}
+load(); setInterval(() => { if (!document.hidden && last.indexOf("paid") < 0 && last.indexOf("cancelled") < 0) load(); }, 8000);
+</script>
+</body>
+</html>

@@ -11,7 +11,30 @@
 <link rel="stylesheet" href="assets/style.css">
 <script src="data/config.js"></script>
 <title>menu — 0866°</title>
-<meta name="description" content="the menu at 0866°, vijayawada. espresso, cold brew from the tap and the tower, and a few fun ones.">
+<meta name="description" content="the menu at 0866°, vijayawada. coffee and merch, with live prices. order from your seat.">
+<style>
+.m-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--bronze-soft); }
+.m-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 20px; align-items: end; padding: 22px 0 22px 18px; border-bottom: 1px solid var(--bronze-soft); position: relative; }
+.m-row::before { content: ""; position: absolute; left: 0; top: 22px; bottom: 22px; width: 3px; border-radius: 2px; background: var(--pop, var(--red)); }
+.m-code { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: color-mix(in srgb, var(--pop, var(--red)) 75%, var(--ink)); }
+.m-tag { padding: 2px 9px; border: 1px solid currentColor; border-radius: 999px; font-size: 10.5px; letter-spacing: .12em; }
+.m-name { font-size: clamp(30px, 3.2vw, 44px); margin: 4px 0; }
+.m-desc { color: var(--ink-soft); font-size: 16.5px; margin: 0; max-width: 30em; line-height: 1.45; }
+.m-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.m-price { font-family: var(--board); font-weight: 700; font-size: 22px; letter-spacing: .04em; }
+.m-side .btn { font-size: 16px; padding: .55em 1.2em; }
+.m-out .m-name, .m-out .m-desc, .m-out .m-price { opacity: .45; }
+.m-outtag { font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--red); border: 1px solid var(--red); border-radius: 999px; padding: 6px 14px; }
+.m-merch { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 34px 26px; margin-top: 30px; }
+.m-merch a { text-decoration: none; display: block; }
+.m-pola { background: #FFFCF6; padding: 10px 10px 0; box-shadow: 0 18px 40px -20px rgba(57,24,15,.45); transform: rotate(-1.5deg); transition: transform .45s cubic-bezier(.3,1.5,.5,1); }
+.m-merch a:nth-child(even) .m-pola { transform: rotate(1.5deg); }
+.m-merch a:hover .m-pola { transform: rotate(0) scale(1.03); }
+.m-pola img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.m-pola span { display: flex; justify-content: space-between; gap: 10px; padding: 10px 2px 12px; font-family: var(--display); font-style: italic; font-size: 19px; line-height: 1.15; }
+.m-pola b { font-family: var(--board); font-style: normal; font-size: 16px; white-space: nowrap; }
+.m-skel { height: 110px; border-bottom: 1px solid var(--bronze-soft); }
+</style>
 </head>
 <body data-page="menu">
 <main>
@@ -19,20 +42,59 @@
     <div class="wrap">
       <h1>the menu</h1>
       <p class="lede">the menu stays. the beans behind it change every fifteen days.</p>
-      <p><a class="textlink" href="arrivals.html">see what's on the board now</a></p>
+      <div class="btn-row" style="margin-top:8px"><a class="btn" href="order/">order from your seat →</a><a class="btn ghost" href="arrivals.html">see what's on the board now</a></div>
     </div>
   </header>
   <section style="padding-top:0">
-    <div class="wrap menu-sheets" id="sheets"></div>
+    <div class="wrap">
+      <p class="kicker">coffee</p>
+      <ol class="m-list" id="coffee"><li class="m-skel"></li><li class="m-skel"></li><li class="m-skel"></li></ol>
+      <div id="merchSec" style="display:none;margin-top:clamp(56px,8vw,96px)">
+        <p class="kicker">merch</p>
+        <h2>carry-on.</h2>
+        <div class="m-merch" id="merch"></div>
+      </div>
+      <div class="menu-sheets" id="sheets" style="margin-top:56px"></div>
+    </div>
   </section>
 </main>
 <script src="assets/site.js"></script>
 <script>
-  const box = document.getElementById("sheets");
-  const imgs = window.SITE.menuImages || [];
-  box.innerHTML = imgs.length
-    ? imgs.map((src, i) => `<img src="${src}" alt="0866° menu, page ${i + 1} of ${imgs.length}" loading="lazy">`).join("")
-    : `<div class="photo" style="min-height:70vh">menu page 1 goes here</div><div class="photo" style="min-height:70vh">menu page 2 goes here</div>`;
+(function () {
+  const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+  const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
+  const POPS = ["tangerine", "caramel", "monsoon", "mango", "red", "bronze"];
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const rs = n => "₹" + Number(n).toLocaleString("en-IN");
+  const pad = n => String(n).padStart(2, "0");
+  fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,image,available,sizes,sold_out_sizes&order=sort.asc,created_at.asc`,
+        { headers: { apikey: KEY, Authorization: "Bearer " + KEY } })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(items => {
+      const coffee = items.filter(m => m.category !== "merch"), merch = items.filter(m => m.category === "merch");
+      document.getElementById("coffee").innerHTML = coffee.map((m, i) => `
+        <li class="m-row pop-${POPS[i % POPS.length]}${m.available ? "" : " m-out"}">
+          <div class="m-code">0866·${pad(i + 1)}${m.tag ? `<span class="m-tag">${esc(m.tag)}</span>` : ""}</div>
+          <div><h3 class="m-name">${esc(m.name)}</h3><p class="m-desc">${esc(m.description)}</p></div>
+          <div class="m-side"><span class="m-price">${rs(m.price)}</span>${m.available ? `<a class="btn ghost" href="order/?add=${m.id}">order</a>` : `<span class="m-outtag">sold out</span>`}</div>
+        </li>`).join("");
+      if (merch.length) {
+        document.getElementById("merchSec").style.display = "";
+        document.getElementById("merch").innerHTML = merch.map(m => {
+          const out = !m.available || !(m.sizes || []).some(z => !(m.sold_out_sizes || []).includes(z));
+          return `<a href="order/#merch"><div class="m-pola"><img src="${esc(m.image)}" alt="${esc(m.name)}" loading="lazy" width="800" height="800">
+            <span>${esc(m.name)}<b>${out ? "sold out" : rs(m.price)}</b></span></div></a>`;
+        }).join("");
+      }
+    })
+    .catch(() => {
+      document.getElementById("coffee").innerHTML = `<li class="m-row"><div><h3 class="m-name">the menu didn't load.</h3><p class="m-desc">refresh, or <a class="textlink" href="order/">open the order page</a>.</p></div></li>`;
+    });
+  /* printed menu pages, if any are set in data/config.js */
+  const imgs = (window.SITE && window.SITE.menuImages) || [];
+  if (imgs.length) document.getElementById("sheets").innerHTML = `<p class="kicker">the printed menu</p>` +
+    imgs.map((src, i) => `<img src="${src}" alt="0866° menu, page ${i + 1} of ${imgs.length}" loading="lazy">`).join("");
+})();
 </script>
 </body>
 </html>

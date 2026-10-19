@@ -316,6 +316,14 @@ async function loadMenu(){
     menu = await r.json();
     for (const k in cart) { const { id, size } = splitKey(k), m = menu.find(x => x.id === id);
       if (!m || ((m.sizes || []).length ? !m.sizes.includes(size) : size)) delete cart[k]; }
+    /* arriving from the menu page with ?add=<id> puts that drink in the cart once */
+    const add = new URLSearchParams(location.search).get("add");
+    if (add) {
+      history.replaceState(null, "", location.pathname + location.hash);
+      const m = menu.find(x => x.id === add);
+      if (m && m.available && !(m.sizes || []).length) { cart[add] = Math.min((cart[add] || 0) + 1, 20); setTimeout(() => toast(`added ${m.name}`), 300); }
+      else if (m && (m.sizes || []).length) setTimeout(() => document.getElementById("merch").scrollIntoView(), 300);
+    }
     store.set("0866_cart", cart);
     renderMenu(); renderMerch(); renderCart();
   } catch {
@@ -521,7 +529,7 @@ function renderOrder(o){
       </div>
     </div>
     ${pay}
-    <button class="btn ghost o-back" onclick="backToMenu()">← order something else</button>
+    <div class="btn-row o-back"><a class="btn" href="/order/receipt.html?id=${o.id}">your receipt →</a><button class="btn ghost" onclick="backToMenu()">← order something else</button></div>
     <p class="o-keep">keep this page open. it updates on its own.</p>`;
   const fb = $("#fboard");
   rows = [makeRow([5, 3]), makeRow([9])]; rows.forEach(r => fb.append(r));

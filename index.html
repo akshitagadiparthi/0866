@@ -25,9 +25,9 @@
         <h1 class="sr">0866°, coffee in vijayawada</h1>
         <div class="logo-holder"><img id="heroLogo" src="assets/img/logo.png" alt="0866°" width="673" height="284"></div>
         <p class="hero-line">coffee, mostly cold.</p>
+        <p style="margin-top:22px;animation:fadeup 1s ease 2.2s both"><a class="btn" href="order/">order from your seat →</a></p>
               </div>
       <div class="badge hero-badge" id="heroBadge"><div class="core"><img src="assets/img/bean.png" alt=""></div></div>
-      <span class="hero-hint">scroll</span>
     </div>
   </section>
 
@@ -91,20 +91,6 @@
     </div>
   </section>
 
-  <!-- collage -->
-  <section class="collage-sec">
-    <div class="wrap">
-      <p class="kicker">the counter, soon</p>
-      <h2 class="collage-title">we're still building.<br>here's where the photos go.</h2>
-    </div>
-    <div class="collage">
-      <figure class="polaroid p1"><div class="photo">the counter</div><figcaption>the counter</figcaption></figure>
-      <figure class="polaroid p2"><div class="photo">the tower</div><figcaption>the tower, batch 001</figcaption></figure>
-      <figure class="polaroid p3"><div class="photo">the tap</div><figcaption>the tap</figcaption></figure>
-      <figure class="polaroid p4"><div class="photo">the window bench</div><figcaption>the window bench</figcaption></figure>
-      <figure class="polaroid p5"><div class="photo">a cup</div><figcaption>a cup, close up</figcaption></figure>
-    </div>
-  </section>
 
   <section class="band-red">
     <div class="wrap">
@@ -162,10 +148,6 @@
       if (v.duration && Math.abs(v.currentTime - target) > .03) v.currentTime += (target - v.currentTime) * .2;
       requestAnimationFrame(loop);
     })();
-  } else {
-    const n = document.createElement("span");
-    n.className = "hero-video-note"; n.textContent = "space for the opening video";
-    stage.append(n);
   }
 
   const O = window.O866;
