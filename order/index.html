@@ -55,6 +55,14 @@ input { text-transform: none; }
 .o-sizes button:disabled { opacity: .35; text-decoration: line-through; cursor: not-allowed; }
 .o-lineout { display: block; font-family: var(--text); font-style: italic; font-size: 14px; color: var(--red); margin-top: 4px; }
 .o-utrform { margin-top: 16px; }
+.o-addons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.o-addon { border: 1px dashed var(--ink); background: none; color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 15px; cursor: pointer; }
+.o-addon[aria-pressed="true"] { background: var(--mango); border: 1px solid var(--ink); }
+.o-item .o-hint { margin-top: 8px; min-height: 0; }
+.o-lineadd { display: block; font-family: var(--text); font-style: normal; font-size: 15px; color: var(--red); margin-top: 2px; }
+.o-steps { margin: 4px 0 6px; padding-left: 1.3em; font-size: 16.5px; line-height: 1.5; }
+.o-steps li { margin-bottom: 10px; padding-left: 4px; }
+.o-steps li::marker { font-family: var(--board); font-weight: 700; color: var(--red); }
 .o-proof-btn { cursor: pointer; }
 .o-proof-done { display: flex; gap: 10px; align-items: baseline; margin: 16px 0 6px; font-family: var(--display); font-style: italic; font-size: 20px; line-height: 1.3; }
 .o-proof-done i { width: 9px; height: 9px; border-radius: 50%; background: #3E8E4E; flex: none; transform: translateY(-2px); }
@@ -305,17 +313,19 @@ function flipRow(row, words){
 }
 
 /* ---------- menu + cart ---------- */
-/* cart keys are "id" for coffee and "id|size" for merch */
-let menu = [], cart = store.get("0866_cart") || {}, method = "upi", chosen = {};
-const splitKey = k => { const [id, size] = k.split("|"); return { id, size: size || "" }; };
+/* cart keys: "id", "id|size" for merch, "id||shot" for drinks with add-ons */
+let menu = [], cart = store.get("0866_cart") || {}, method = "upi", chosen = {}, opts = {};
+const splitKey = k => { const [id, size, adds] = k.split("|"); return { id, size: size || "", addons: adds ? adds.split(",") : [] }; };
+const keyFor = id => (opts[id] || []).length ? `${id}||${[...opts[id]].sort().join(",")}` : id;
+const addonInfo = (m, keys) => keys.map(k => (m.addons || []).find(a => a.key === k)).filter(Boolean);
 
 async function loadMenu(){
   try {
-    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,image,image_full,sizes,sold_out_sizes,available&order=sort.asc,created_at.asc`, { headers: H });
+    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,image,image_full,sizes,sold_out_sizes,available,addons&order=sort.asc,created_at.asc`, { headers: H });
     if (!r.ok) throw 0;
     menu = await r.json();
-    for (const k in cart) { const { id, size } = splitKey(k), m = menu.find(x => x.id === id);
-      if (!m || ((m.sizes || []).length ? !m.sizes.includes(size) : size)) delete cart[k]; }
+    for (const k in cart) { const { id, size, addons } = splitKey(k), m = menu.find(x => x.id === id);
+      if (!m || ((m.sizes || []).length ? !m.sizes.includes(size) : size) || addonInfo(m, addons).length !== addons.length) delete cart[k]; }
     /* arriving from the menu page with ?add=<id> puts that drink in the cart once */
     const add = new URLSearchParams(location.search).get("add");
     if (add) {
@@ -345,8 +355,10 @@ function renderMenu(){
   $("#menu").innerHTML = coffee().map((m, i) => `
     <li class="o-item pop-${POPS[i % POPS.length]}${m.available ? "" : " o-out"}" data-id="${m.id}">
       <div class="o-code">0866·${pad(i + 1)}${m.tag ? `<span class="o-tag">${esc(m.tag)}</span>` : ""}</div>
-      <div><h3 class="o-name">${esc(m.name)}</h3><p class="o-desc">${esc(m.description)}</p></div>
-      <div class="o-side"><span class="o-price">${rs(m.price)}</span><span class="ctl">${ctl(m.id)}</span></div>
+      <div><h3 class="o-name">${esc(m.name)}</h3><p class="o-desc">${esc(m.description)}</p>
+        ${m.available && (m.addons || []).length ? `<div class="o-addons">${m.addons.map(a => `<button class="o-addon" data-addon="${esc(a.key)}" data-for="${m.id}" aria-pressed="${(opts[m.id] || []).includes(a.key)}" aria-label="add ${esc(a.label)} for ${rs(a.price)}">+ ${esc(a.label.replace(/ of espresso$/, ""))} · ${rs(a.price)}</button>`).join("")}</div>` : ""}
+        <p class="o-hint" id="hint-${m.id}">${bagText(m.id)}</p></div>
+      <div class="o-side"><span class="o-price">${rs(m.price + addonInfo(m, opts[m.id] || []).reduce((t, a) => t + a.price, 0))}</span><span class="ctl">${ctl(m.id)}</span></div>
     </li>`).join("") || `<li class="o-item"><p class="o-desc">nothing on the menu right now.</p></li>`;
 }
 function renderMerch(){
@@ -370,15 +382,19 @@ function renderMerch(){
     </article>`).join("");
 }
 function bagText(id){
-  const got = Object.entries(cart).filter(([k]) => splitKey(k).id === id).map(([k, q]) => `<span class="o-sz">${esc(splitKey(k).size || "one")}</span> × ${q}`);
+  const m = menu.find(x => x.id === id);
+  const got = Object.entries(cart).filter(([k]) => splitKey(k).id === id).map(([k, q]) => { const p = splitKey(k);
+    const lbl = p.size ? `<span class="o-sz">${esc(p.size)}</span>` : "";
+    const ad = m ? addonInfo(m, p.addons).map(a => "+ " + esc(a.label.replace(/ of espresso$/, ""))).join(" ") : "";
+    return `${[lbl, ad].filter(Boolean).join(" ") || "regular"} × ${q}`; });
   return got.length ? `in your order: ${got.join(", ")}` : "";
 }
 function ctl(id){
   const mm = menu.find(x => x.id === id);
   if (mm && !mm.available) return `<span class="o-outtag">sold out</span>`;
-  const q = cart[id] || 0;
-  return q ? `<span class="o-step"><button data-dec="${id}" aria-label="one less">−</button><b>${q}</b><button data-inc="${id}" aria-label="one more">+</button></span>`
-           : `<button class="btn ghost o-add" data-inc="${id}">add</button>`;
+  const k = keyFor(id), q = cart[k] || 0;
+  return q ? `<span class="o-step"><button data-dec="${k}" aria-label="one less">−</button><b>${q}</b><button data-inc="${k}" aria-label="one more">+</button></span>`
+           : `<button class="btn ghost o-add" data-inc="${k}">add</button>`;
 }
 function setQty(key, q){
   if (q <= 0) delete cart[key]; else cart[key] = Math.min(q, 20);
@@ -393,7 +409,7 @@ document.addEventListener("click", e => {
   const inc = e.target.closest("[data-inc]"), dec = e.target.closest("[data-dec]");
   const size = e.target.closest("[data-size]"), addm = e.target.closest("[data-addm]"), zoom = e.target.closest("[data-zoom]");
   if (inc){ const key = inc.dataset.inc; setQty(key, (cart[key] || 0) + 1);
-    const it = document.querySelector(`.o-item[data-id="${key}"]`);
+    const it = document.querySelector(`.o-item[data-id="${splitKey(key).id}"]`);
     if (it && !e.target.closest(".o-sheet")){ it.classList.remove("pop"); void it.offsetWidth; it.classList.add("pop"); }
     bump();
   }
@@ -410,16 +426,26 @@ document.addEventListener("click", e => {
     setQty(key, (cart[key] || 0) + 1); bump();
     toast(`added ${m.name} to your order`);
   }
+  const addon = e.target.closest("[data-addon]");
+  if (addon){ const id = addon.dataset.for, k = addon.dataset.addon, cur = opts[id] || [];
+    opts[id] = cur.includes(k) ? cur.filter(x => x !== k) : [...cur, k];
+    const row = document.querySelector(`.o-item[data-id="${id}"]`), m = menu.find(x => x.id === id);
+    row.querySelectorAll("[data-addon]").forEach(b => b.setAttribute("aria-pressed", (opts[id] || []).includes(b.dataset.addon)));
+    row.querySelector(".o-price").textContent = rs(m.price + addonInfo(m, opts[id]).reduce((t, a) => t + a.price, 0));
+    row.querySelector(".ctl").innerHTML = ctl(id);
+  }
   if (zoom){ $("#zoomImg").src = zoom.dataset.zoom; $("#zoomImg").alt = zoom.getAttribute("aria-label"); $("#zoom").classList.add("show"); }
 });
 $("#zoom").onclick = () => $("#zoom").classList.remove("show");
-const lines = () => Object.entries(cart).map(([key, qty]) => { const { id, size } = splitKey(key); return { key, size, m: menu.find(x => x.id === id), qty }; }).filter(l => l.m);
+const lines = () => Object.entries(cart).map(([key, qty]) => { const { id, size, addons } = splitKey(key), m = menu.find(x => x.id === id);
+  if (!m) return null; const ad = addonInfo(m, addons);
+  return { key, size, addons, ad, m, qty, unit: m.price + ad.reduce((t, a) => t + a.price, 0) }; }).filter(Boolean);
 function renderCart(){
-  const L = lines(), count = L.reduce((a, l) => a + l.qty, 0), total = L.reduce((a, l) => a + l.qty * l.m.price, 0);
+  const L = lines(), count = L.reduce((a, l) => a + l.qty, 0), total = L.reduce((a, l) => a + l.qty * l.unit, 0);
   $("#cnt").textContent = count; $("#barTotal").textContent = rs(total) + " →"; $("#sheetTotal").textContent = rs(total);
   $("#bar").classList.toggle("show", count > 0 && !$("#orderView").classList.contains("show"));
   $("#lines").innerHTML = L.map(l => `
-    <div class="o-line"><span class="nm">${esc(l.m.name)}${l.size ? ` · <span class="o-sz">${esc(l.size)}</span>` : ""}<small>${rs(l.m.price)} × ${l.qty} = ${rs(l.m.price * l.qty)}</small>${isOut(l) ? `<span class="o-lineout">just sold out. please remove it.</span>` : ""}</span>
+    <div class="o-line"><span class="nm">${esc(l.m.name)}${l.size ? ` · <span class="o-sz">${esc(l.size)}</span>` : ""}${l.ad.map(a => `<span class="o-lineadd">+ ${esc(a.label)}</span>`).join("")}<small>${rs(l.unit)} × ${l.qty} = ${rs(l.unit * l.qty)}</small>${isOut(l) ? `<span class="o-lineout">just sold out. please remove it.</span>` : ""}</span>
       <span class="o-step"><button data-dec="${esc(l.key)}" aria-label="one less">−</button><b>${l.qty}</b><button data-inc="${esc(l.key)}" aria-label="one more">+</button></span></div>`).join("")
     || `<p class="o-desc" style="padding:16px 0">nothing here yet.</p>`;
   const anyOut = L.some(isOut), err = $("#err");
@@ -443,7 +469,7 @@ $("#place").onclick = async () => {
   if (!name){ $("#err").textContent = "tell us your name, so we know whose coffee it is."; $("#cname").focus(); return; }
   const phone = cleanPhone($("#cphone").value);
   if (phone && !/^[6-9]\d{9}$/.test(phone)) { $("#err").textContent = "that whatsapp number doesn't look right. use 10 digits, or leave it empty."; $("#cphone").focus(); return; }
-  const items = lines().map(l => ({ id: l.m.id, qty: l.qty, size: l.size || null })); if (!items.length) return;
+  const items = lines().map(l => ({ id: l.m.id, qty: l.qty, size: l.size || null, addons: l.addons })); if (!items.length) return;
   const btn = $("#place"); btn.disabled = true; btn.textContent = "sending to the counter…"; $("#err").textContent = "";
   try {
     const res = await rpc("place_order", { p_name: name, p_items: items, p_method: method, p_note: $("#cnote").value.trim() });
@@ -493,10 +519,15 @@ function renderOrder(o){
   else if (o.status === "cancelled") pay = "";
   else if (o.payment_method === "cash") pay = `<div class="o-paybox"><p class="kicker">pay at the counter</p><div class="o-amt">${rs(o.total)}</div><p class="o-help" style="margin:0">cash when you collect. show order <b>${pad(o.order_no)}</b> when you pay.</p></div>`;
   else pay = `<div class="o-paybox"><p class="kicker">pay by upi</p><div class="o-amt">${rs(o.total)}</div>
-      <a class="btn" href="${upiLink(o, "upi")}">pay ${rs(o.total)} with upi →</a>
-      <div class="o-apps"><a class="btn ghost" href="${upiLink(o, "gpay")}">gpay</a><a class="btn ghost" href="${upiLink(o, "phonepe")}">phonepe</a><a class="btn ghost" href="${upiLink(o, "paytm")}">paytm</a></div>
-      <div class="o-copy"><span>${UPI_ID}</span><button onclick="copyUpi()">copy</button></div>
-      <p class="o-help">if the button doesn't open your app, copy the upi id and pay <b>${rs(o.total)}</b> with the note <b>${pad(o.order_no)}</b>. this page updates once the counter confirms it.</p>
+      <ol class="o-steps">
+        <li><b>at the café?</b> scan the 0866 upi qr at the counter with any upi app and pay <b>${rs(o.total)}</b>.</li>
+        <li><b>paying from your phone?</b> tap below to open your upi app, then type <b>${rs(o.total)}</b> and pay.</li>
+      </ol>
+      <a class="btn" href="upi://pay?pa=${UPI_ID}&pn=0866&cu=INR">open upi app · type ${rs(o.total)}</a>
+      <div class="o-apps"><a class="btn ghost" href="gpay://upi/pay?pa=${UPI_ID}&pn=0866&cu=INR">gpay</a><a class="btn ghost" href="phonepe://pay?pa=${UPI_ID}&pn=0866&cu=INR">phonepe</a><a class="btn ghost" href="paytmmp://pay?pa=${UPI_ID}&pn=0866&cu=INR">paytm</a></div>
+      <p class="o-help" style="margin-top:14px">app showing an error? copy our upi id and pay to it by hand:</p>
+      <div class="o-copy"><span>${UPI_ID}</span><button onclick="copyUpi()">copy upi id</button></div>
+      <p class="o-help">or pay to the phone number <b>63035 21185</b>. if your app asks for a note, write <b>${pad(o.order_no)}</b>.</p>
       <div class="o-proof">
         ${o.has_proof
           ? `<p class="o-proof-done"><i></i>screenshot sent. the counter will confirm your payment in a moment.</p>
@@ -511,7 +542,7 @@ function renderOrder(o){
           <input id="utr" inputmode="numeric" maxlength="16" autocomplete="off" placeholder="e.g. 4321 0987 6543"></div>
         <button class="btn ghost" type="submit">send reference</button><p class="o-err" id="utrErr" role="alert"></p>
       </form>
-      <details><summary>paying from someone else's phone? show a qr</summary><div id="qr"></div></details></div>`;
+      <details><summary>someone else paying? show them a qr to scan</summary><div id="qr"></div><p class="o-help" style="text-align:center">they scan it and enter <b>${rs(o.total)}</b>.</p></details></div>`;
   $("#orderBox").innerHTML = `
     <p class="kicker">order ${pad(o.order_no)} · ${o.payment_method === "upi" ? "upi" : "cash"}${o.receipt_no ? ` · ${esc(o.receipt_no)}` : ""}</p>
     <p class="o-hi">hi ${esc(o.customer_name)}.</p>
@@ -520,7 +551,7 @@ function renderOrder(o){
         <div class="pass-label">flight status</div>
         <div class="board o-fboard" id="fboard"><div class="board-top"><span class="board-title">departures</span></div></div>
         <p class="o-msg">${msg}</p>
-        <ul class="o-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <span class="o-sz">${esc(i.size)}</span>` : ""} × ${i.qty}</span><b>${rs(i.price * i.qty)}</b></li>`).join("")}
+        <ul class="o-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <span class="o-sz">${esc(i.size)}</span>` : ""}${(i.addons || []).map(a => ` + ${esc(a)}`).join("")} × ${i.qty}</span><b>${rs(i.price * i.qty)}</b></li>`).join("")}
           <li class="tot"><span>total</span><b>${rs(o.total)}</b></li></ul>
       </div>
       <div class="pass-stub">
@@ -536,7 +567,7 @@ function renderOrder(o){
   if (firstPaint) { flipRow(rows[0], ["ORDER", pad(o.order_no)]); setTimeout(() => flipRow(rows[1], [word]), 350); }
   else { rows[0]._segs.flat().forEach((t, i) => setTile(t, ("ORDER" + pad(o.order_no).padEnd(3, " "))[i] || " ")); flipRow(rows[1], [word]); }
   const qr = document.getElementById("qr");
-  if (qr && window.QRCode) new QRCode(qr, { text: upiLink(o, "upi"), width: 200, height: 200, colorDark: "#39180F", correctLevel: QRCode.CorrectLevel.M });
+  if (qr && window.QRCode) new QRCode(qr, { text: `upi://pay?pa=${UPI_ID}&pn=0866&cu=INR`, width: 200, height: 200, colorDark: "#39180F", correctLevel: QRCode.CorrectLevel.M });
 }
 async function sendUtr(e, id){
   e.preventDefault();

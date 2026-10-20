@@ -87,6 +87,7 @@ main { padding: 22px 0 60px; }
 .s-utr.has { background: color-mix(in srgb, var(--mango) 30%, #FFFCF6); border: 1px solid var(--mango); }
 .s-utr b { font-family: var(--board); letter-spacing: .06em; }
 .s-dup { color: var(--red); font-weight: 600; }
+.s-add { display: block; width: fit-content; margin-top: 3px; padding: 1px 10px; border-radius: 999px; background: var(--mango); font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
 .s-me { font-size: 14px; color: var(--paper); border: 1px solid rgba(241,234,219,.35); border-radius: 999px; padding: 3px 12px; }
 .s-me:empty { display: none; }
 .s-wa { width: 100%; justify-content: center; margin-top: 12px; border-color: #1f8f4e; color: #17733d; }
@@ -285,7 +286,7 @@ function render(){
         <div><div class="s-no">${pad(o.order_no)}</div><div class="s-who">${esc(o.customer_name)}</div><span class="s-st">${LABEL[o.status]}</span>${o.receipt_no ? `<div class="s-rno">${esc(o.receipt_no)}</div>` : ""}</div>
         <div class="s-ago">${ago(o.created_at)}</div>
       </div>
-      <ul class="s-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <b style="font-size:inherit;text-transform:uppercase">${esc(i.size)}</b>` : ""}</span><b>× ${i.qty}</b></li>`).join("")}</ul>
+      <ul class="s-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <b style="font-size:inherit;text-transform:uppercase">${esc(i.size)}</b>` : ""}${(i.addons || []).map(x => `<span class="s-add">+ ${esc(x)}</span>`).join("")}</span><b>× ${i.qty}</b></li>`).join("")}</ul>
       ${o.note ? `<div class="s-note">${esc(o.note)}</div>` : ""}
       <div class="s-pay">
         <div><div class="s-amt">${rs(o.total)}</div><div class="s-pm">${o.payment_method}</div></div>
@@ -319,7 +320,7 @@ document.addEventListener("click", e => {
 setInterval(() => { if ($("#t-orders").style.display !== "none") render(); }, 30000);
 
 function waThanks(o){
-  const items = o.items.map(i => `${i.qty} × ${i.name}${i.size ? " (" + i.size + ")" : ""}`).join("\n");
+  const items = o.items.map(i => `${i.qty} × ${i.name}${i.size ? " (" + i.size + ")" : ""}${(i.addons || []).map(x => " + " + x).join("")}`).join("\n");
   const t = `hi ${o.customer_name}! thank you for ordering at 0866° ☕\n\norder ${pad(o.order_no)} · receipt ${o.receipt_no || ""}\n${items}\ntotal ₹${o.total} · ${o.payment_status === "paid" ? "paid ✓" : o.payment_method}\n\nwe'll call your number when it's ready. see you at the counter.\n— 0866°, vijayawada`;
   return `https://wa.me/91${o.phone}?text=${encodeURIComponent(t)}`;
 }
