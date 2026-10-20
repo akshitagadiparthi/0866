@@ -87,6 +87,14 @@ main { padding: 22px 0 60px; }
 .s-utr.has { background: color-mix(in srgb, var(--mango) 30%, #FFFCF6); border: 1px solid var(--mango); }
 .s-utr b { font-family: var(--board); letter-spacing: .06em; }
 .s-dup { color: var(--red); font-weight: 600; }
+.s-opt { display: block; width: fit-content; margin-top: 3px; padding: 1px 10px; border-radius: 999px; background: var(--sky, #A9D8FF); background: color-mix(in srgb, var(--monsoon) 22%, #fff); font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+.s-items li { align-items: flex-start; }
+.s-qty { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.s-minus { border: 1px solid var(--red); color: var(--red); background: none; border-radius: 999px; padding: 1px 9px; font: 700 13px var(--board); cursor: pointer; }
+.s-edited { margin: -2px 0 10px; font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--red); }
+.s-log { list-style: none; margin: 0 0 12px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--red) 7%, #fff); font-size: 14px; line-height: 1.45; }
+.s-log li + li { margin-top: 6px; }
+.s-log span { color: var(--ink-soft); }
 .s-add { display: block; width: fit-content; margin-top: 3px; padding: 1px 10px; border-radius: 999px; background: var(--mango); font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
 .s-me { font-size: 14px; color: var(--paper); border: 1px solid rgba(241,234,219,.35); border-radius: 999px; padding: 3px 12px; }
 .s-me:empty { display: none; }
@@ -151,6 +159,7 @@ main { padding: 22px 0 60px; }
           <button data-f="unpaid">unpaid</button>
           <button data-f="done">completed</button>
           <button data-f="all">all today</button>
+          <button data-f="edited" data-admin>edited &amp; cancelled</button>
         </div>
         <div class="s-grid" id="grid"></div>
       </section>
@@ -180,6 +189,10 @@ main { padding: 22px 0 60px; }
         <div class="field" style="margin-top:12px"><label for="nWaKey">callmebot api key</label><input id="nWaKey" type="password" autocomplete="off" placeholder="leave blank to keep the saved one"></div>
         <div class="btn-row" style="margin-top:16px"><button class="btn" id="nSave">save alerts</button><button class="btn ghost" id="nTest">send a test alert</button></div>
 
+        <h3 style="margin-top:40px">your records</h3>
+        <p class="quiet" style="font-size:15px">the free database has no automatic backups, so download your orders now and then.</p>
+        <button class="btn ghost" id="exportCsv">download orders (last 30 days)</button>
+
         <h3 style="margin-top:40px">this device</h3>
         <div class="btn-row"><button class="btn ghost" id="test">test the chime</button><button class="btn ghost" id="logout">log out</button></div>
         <p class="quiet" style="margin-top:28px;font-size:15px">customer page: <a class="textlink" href="/order/">0866.in/order</a></p>
@@ -188,6 +201,7 @@ main { padding: 22px 0 60px; }
   </main>
 </div>
 
+<script src="/data/arrivals.js"></script>
 <script>
 const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
 const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
@@ -280,13 +294,17 @@ function render(){
   if (filter === "active") list = orders.filter(o => ["new", "preparing", "ready"].includes(o.status)).reverse();
   if (filter === "unpaid") list = orders.filter(o => o.payment_status !== "paid" && o.status !== "cancelled");
   if (filter === "done") list = orders.filter(o => ["done", "cancelled"].includes(o.status));
+  if (filter === "edited") list = orders.filter(o => o.edited);
   $("#grid").innerHTML = list.map(o => `
     <article class="s-card ${o.status}">
       <div class="s-row">
         <div><div class="s-no">${pad(o.order_no)}</div><div class="s-who">${esc(o.customer_name)}</div><span class="s-st">${LABEL[o.status]}</span>${o.receipt_no ? `<div class="s-rno">${esc(o.receipt_no)}</div>` : ""}</div>
         <div class="s-ago">${ago(o.created_at)}</div>
       </div>
-      <ul class="s-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <b style="font-size:inherit;text-transform:uppercase">${esc(i.size)}</b>` : ""}${(i.addons || []).map(x => `<span class="s-add">+ ${esc(x)}</span>`).join("")}</span><b>× ${i.qty}</b></li>`).join("")}</ul>
+      <ul class="s-items">${o.items.map((i, idx) => `<li><span>${esc(i.name)}${i.size ? ` · <b style="font-size:inherit;text-transform:uppercase">${esc(i.size)}</b>` : ""}${(i.options || []).map(x => `<span class="s-opt">${esc(x)}</span>`).join("")}${(i.addons || []).map(x => `<span class="s-add">+ ${esc(x)}</span>`).join("")}</span>
+        <span class="s-qty"><b>× ${i.qty}</b>${["new", "preparing", "ready"].includes(o.status) && !(o.items.length === 1 && i.qty === 1) ? `<button class="s-minus" data-adj="${o.id}" data-idx="${idx}" data-qty="${i.qty}" title="remove one" aria-label="remove one ${esc(i.name)}">−1</button>` : ""}</span></li>`).join("")}</ul>
+      ${o.edited ? `<div class="s-edited">${o.status === "cancelled" ? "cancelled" : "changed at the counter"}${o.original_total != null && o.original_total !== o.total ? ` · was ${rs(o.original_total)}` : ""}</div>` : ""}
+      ${ROLE === "admin" && (o.changes || []).length ? `<ul class="s-log">${o.changes.map(c => `<li><b>${new Date(c.at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).toLowerCase()} · ${esc(c.by)}</b> ${esc(c.action)}: ${esc(c.detail)}${c.old_total !== c.new_total ? ` <span>(${rs(c.old_total)} → ${rs(c.new_total)})</span>` : ""}</li>`).join("")}</ul>` : ""}
       ${o.note ? `<div class="s-note">${esc(o.note)}</div>` : ""}
       <div class="s-pay">
         <div><div class="s-amt">${rs(o.total)}</div><div class="s-pm">${o.payment_method}</div></div>
@@ -314,13 +332,23 @@ document.addEventListener("click", e => {
     if (o && o.payment_method === "upi" && !confirm(`mark order ${pad(o.order_no)} paid?\n\nonly if ₹${o.total} has arrived in phonepe${o.utr ? " with utr " + o.utr : ""}. never go by a screenshot.`)) return;
     act(t.dataset.pay, null, "paid", t); }
   if (t.dataset.unpay && confirm("mark this order as not paid?")) act(t.dataset.unpay, null, "pending", t);
-  if (t.dataset.st) act(t.dataset.st, t.dataset.to, null, t);
+  if (t.dataset.st) { const o = orders.find(x => x.id === t.dataset.st);
+    if (o && t.dataset.to === "preparing" && o.payment_status !== "paid" && !confirm(`order ${pad(o.order_no)} isn't paid yet.\n\nstart making it anyway?`)) return;
+    act(t.dataset.st, t.dataset.to, null, t); }
+  if (t.dataset.adj) { const o = orders.find(x => x.id === t.dataset.adj), idx = +t.dataset.idx, q = +t.dataset.qty, it = o && o.items[idx];
+    if (!it) return;
+    const reason = prompt(`remove one ${it.name} from order ${pad(o.order_no)}?\nthe total drops by ₹${it.price}.\n\nreason (e.g. ordered twice by mistake):`, "");
+    if (reason === null) return;
+    t.disabled = true;
+    rpc("staff_adjust_item", { p_pin: PIN, p_id: o.id, p_index: idx, p_new_qty: q - 1, p_reason: reason })
+      .then(r => { toast(`order ${pad(o.order_no)} is now ${rs(r.total)}${o.payment_status === "paid" ? `. refund ₹${it.price} to the customer` : ""}`); refresh(); })
+      .catch(err => { toast(err.message); t.disabled = false; }); }
   if (t.dataset.cancel && confirm("cancel this order?")) act(t.dataset.cancel, "cancelled", null, t);
 });
 setInterval(() => { if ($("#t-orders").style.display !== "none") render(); }, 30000);
 
 function waThanks(o){
-  const items = o.items.map(i => `${i.qty} × ${i.name}${i.size ? " (" + i.size + ")" : ""}${(i.addons || []).map(x => " + " + x).join("")}`).join("\n");
+  const items = o.items.map(i => `${i.qty} × ${i.name}${i.size ? " (" + i.size + ")" : ""}${(i.options || []).map(x => " · " + x).join("")}${(i.addons || []).map(x => " + " + x).join("")}`).join("\n");
   const t = `hi ${o.customer_name}! thank you for ordering at 0866° ☕\n\norder ${pad(o.order_no)} · receipt ${o.receipt_no || ""}\n${items}\ntotal ₹${o.total} · ${o.payment_status === "paid" ? "paid ✓" : o.payment_method}\n\nwe'll call your number when it's ready. see you at the counter.\n— 0866°, vijayawada`;
   return `https://wa.me/91${o.phone}?text=${encodeURIComponent(t)}`;
 }
@@ -353,7 +381,19 @@ document.addEventListener("click", async e => {
 
 /* sold out */
 let stock = [];
-async function loadStock(){ try { stock = await rpc("staff_menu", { p_pin: PIN }); renderStock(); } catch (e) { toast(e.message); } }
+let beanStock = {};
+async function loadStock(){ try {
+  stock = await rpc("staff_menu", { p_pin: PIN });
+  const r = await fetch(`${SB}/rest/v1/bean_stock?select=origin,sold_out,premium`, { headers: { apikey: KEY, Authorization: "Bearer " + KEY } });
+  beanStock = {}; if (r.ok) (await r.json()).forEach(b => beanStock[b.origin] = b);
+  renderStock(); } catch (e) { toast(e.message); } }
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-bean]"); if (!b) return;
+  const o = b.dataset.bean, cur = beanStock[o] || { origin: o, premium: 0, sold_out: false }, next = !cur.sold_out;
+  beanStock[o] = { ...cur, sold_out: next }; renderStock();
+  try { await rpc("staff_set_bean", { p_pin: PIN, p_origin: o, p_sold_out: next }); toast(next ? "marked as ran out" : "back in stock"); }
+  catch (err) { beanStock[o] = cur; renderStock(); toast(err.message); }
+});
 function renderStock(){
   const sec = (title, list) => list.length ? `<h3 class="s-h">${title}</h3>` + list.map(m => `
     <div class="s-stock ${m.available ? "" : "out"}">
@@ -361,7 +401,13 @@ function renderStock(){
       <button class="s-toggle" data-avail="${m.id}" aria-pressed="${!m.available}">${m.available ? "available" : "sold out"}</button>
       ${(m.sizes || []).length ? `<div class="s-sizes">${m.sizes.map(z => `<button data-szout="${m.id}" data-sz="${esc(z)}" aria-pressed="${(m.sold_out_sizes || []).includes(z)}" aria-label="size ${esc(z)}">${esc(z)}</button>`).join("")}<span class="s-sizes-hint">tap a size to mark it sold out</span></div>` : ""}
     </div>`).join("") : "";
-  $("#stockList").innerHTML = sec("drinks", stock.filter(m => m.category !== "merch")) + sec("merch", stock.filter(m => m.category === "merch"));
+  const board = ((window.ARRIVALS && window.ARRIVALS.beans) || []).filter(b => b.origin);
+  $("#stockList").innerHTML = sec("drinks", stock.filter(m => m.category !== "merch" && m.category !== "brew")) + sec("manual brews", stock.filter(m => m.category === "brew")) +
+    (board.length ? `<h3 class="s-h">beans <small class="quiet" style="font-size:15px;font-style:normal">(from the arrivals board)</small></h3>` + board.map(b => { const st = beanStock[b.origin] || {}; return `
+    <div class="s-stock ${st.sold_out ? "out" : ""}">
+      <div class="s-stock-name">${esc(b.name)}<small>${esc(b.origin)}${st.premium ? ` · premium +${rs(st.premium)}` : ""}${st.sold_out ? " · hidden from orders" : ""}</small></div>
+      <button class="s-toggle" data-bean="${esc(b.origin)}" aria-pressed="${!!st.sold_out}">${st.sold_out ? "ran out" : "in stock"}</button>
+    </div>`; }).join("") : "") + sec("merch", stock.filter(m => m.category === "merch"));
 }
 async function setStock(m, before){
   renderStock();
@@ -391,6 +437,21 @@ $("#nSave").onclick = async () => {
   try { await rpc("staff_set_notify", { p_pin: PIN, p_email: v("#nEmail"), p_resend_key: v("#nResend"), p_wa_phone: v("#nPhone"), p_wa_key: v("#nWaKey") });
     $("#nResend").value = ""; $("#nWaKey").value = ""; toast("alerts saved"); loadNotify(); }
   catch (e) { toast(e.message); }
+};
+$("#exportCsv").onclick = async () => {
+  try {
+    const all = await rpc("staff_orders", { p_pin: PIN, p_days: 31 });
+    const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const head = ["date", "time", "receipt", "order", "name", "phone", "items", "total", "original total", "method", "payment", "paid by", "paid at", "utr", "status", "changes"];
+    const rows = all.slice().reverse().map(o => { const d = new Date(o.created_at);
+      return [d.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }), d.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" }),
+        o.receipt_no, o.order_no, o.customer_name, o.phone, o.items.map(i => `${i.qty} x ${i.name}${i.size ? " (" + i.size + ")" : ""}${(i.options || []).map(x => " / " + x).join("")}${(i.addons || []).map(x => " + " + x).join("")}`).join("; "),
+        o.total, o.original_total, o.payment_method, o.payment_status, o.paid_by, o.paid_at ? new Date(o.paid_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : "", o.utr, o.status,
+        (o.changes || []).map(c => `${c.by}: ${c.action} ${c.detail}`).join(" | ")].map(q).join(","); });
+    const blob = new Blob(["\ufeff" + [head.map(q).join(","), ...rows].join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `0866-orders-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    toast(`downloaded ${all.length} orders`);
+  } catch (e) { toast(e.message); }
 };
 $("#nTest").onclick = async () => {
   try { await rpc("staff_test_notify", { p_pin: PIN }); toast("test sent. check your email and whatsapp in a minute."); } catch (e) { toast(e.message); }

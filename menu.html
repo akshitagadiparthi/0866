@@ -49,6 +49,12 @@
     <div class="wrap">
       <p class="kicker">coffee</p>
       <ol class="m-list" id="coffee"><li class="m-skel"></li><li class="m-skel"></li><li class="m-skel"></li></ol>
+      <div id="brewSec" style="display:none;margin-top:clamp(56px,8vw,96px)">
+        <p class="kicker">manual brews</p>
+        <h2>slow bar.</h2>
+        <p class="lede" style="max-width:26em">hot or iced, with your pick of this fortnight's beans.</p>
+        <ol class="m-list" id="brewList"></ol>
+      </div>
       <div id="merchSec" style="display:none;margin-top:clamp(56px,8vw,96px)">
         <p class="kicker">merch</p>
         <h2>carry-on.</h2>
@@ -71,7 +77,14 @@
         { headers: { apikey: KEY, Authorization: "Bearer " + KEY } })
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(items => {
-      const coffee = items.filter(m => m.category !== "merch"), merch = items.filter(m => m.category === "merch");
+      const coffee = items.filter(m => m.category !== "merch" && m.category !== "brew"), merch = items.filter(m => m.category === "merch"), brew = items.filter(m => m.category === "brew");
+      if (brew.length) { document.getElementById("brewSec").style.display = "";
+        document.getElementById("brewList").innerHTML = brew.map((m, i) => `
+        <li class="m-row pop-${POPS[(i + 3) % POPS.length]}${m.available ? "" : " m-out"}">
+          <div class="m-code">0866·b${i + 1}<span class="m-tag">hot or iced</span></div>
+          <div><h3 class="m-name">${esc(m.name)}</h3><p class="m-desc">${esc(m.description)}</p></div>
+          <div class="m-side"><span class="m-price">${rs(m.price)}</span>${m.available ? `<a class="btn ghost" href="order/?add=${m.id}">order</a>` : `<span class="m-outtag">sold out</span>`}</div>
+        </li>`).join(""); }
       document.getElementById("coffee").innerHTML = coffee.map((m, i) => `
         <li class="m-row pop-${POPS[i % POPS.length]}${m.available ? "" : " m-out"}">
           <div class="m-code">0866·${pad(i + 1)}${m.tag ? `<span class="m-tag">${esc(m.tag)}</span>` : ""}</div>

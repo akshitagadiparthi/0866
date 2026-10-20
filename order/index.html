@@ -28,6 +28,25 @@ input { text-transform: none; }
 /* menu list */
 .o-menu { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--bronze-soft); }
 
+/* manual brews */
+.o-brew-sec { padding: clamp(56px, 8vw, 100px) 0 0; }
+.o-brew-sec h2 { margin-bottom: .2em; }
+.o-brew { margin-top: 30px; background: #FFFCF6; border: 1px solid rgba(57,24,15,.16); border-radius: 18px; padding: clamp(18px, 3vw, 30px); box-shadow: 0 24px 50px -36px rgba(57,24,15,.6); }
+.o-bstep { padding: 4px 0 22px; }
+.o-bstep + .o-bstep { border-top: 1px dashed rgba(57,24,15,.25); padding-top: 18px; }
+.o-blabel { display: flex; align-items: center; gap: 10px; font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--red); margin: 0 0 12px; }
+.o-blabel i { font-style: normal; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); font-size: 12px; letter-spacing: 0; }
+.o-bopts { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.o-bopts.two { grid-template-columns: repeat(2, minmax(0, 160px)); }
+.o-bopt { text-align: left; border: 1px solid var(--ink); border-radius: 14px; background: rgba(255,255,255,.4); color: var(--ink); padding: 12px 14px; font: inherit; cursor: pointer; transition: background .15s, color .15s; }
+.o-bopt b { display: block; font-family: var(--display); font-style: italic; font-weight: 500; font-size: 22px; line-height: 1.1; }
+.o-bopt small { display: block; font-size: 14px; color: var(--ink-soft); margin-top: 3px; line-height: 1.35; }
+.o-bopt .prem { display: inline-block; margin-top: 6px; font-family: var(--board); font-weight: 700; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; background: var(--mango); color: var(--ink); border-radius: 999px; padding: 2px 9px; }
+.o-bopt[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.o-bopt[aria-pressed="true"] small { color: var(--bronze-soft); }
+.o-bopt:disabled { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
+.o-bfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--bronze-soft); padding-top: 18px; }
+
 /* merch */
 .o-merch-sec { padding: clamp(56px, 8vw, 100px) 0 170px; }
 .o-merch-sec h2 { margin-bottom: .2em; }
@@ -164,7 +183,7 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
 
 .o-toast { position: fixed; left: 50%; top: 16px; z-index: 90; transform: translate(-50%, -160%); background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 999px; font-size: 16px; transition: transform .3s; }
 .o-toast.show { transform: translate(-50%, 0); }
-#beans { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 80; }
+#beans { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 80; display: none; }
 .o-foot { text-align: center; font-size: 14px; color: var(--ink-soft); padding: 0 0 40px; }
 </style>
 </head>
@@ -195,7 +214,7 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
       <p class="kicker">order from your seat</p>
       <h1>check in.</h1>
       <p class="lede">pick your coffee, pay by upi or cash, and we'll call your number when it lands.</p>
-      <div class="o-jump"><a class="btn ghost" href="#coffee">coffee ↓</a><a class="btn ghost" href="#merch">merch ↓</a></div>
+      <div class="o-jump"><a class="btn ghost" href="#coffee">coffee ↓</a><a class="btn ghost" href="#brews">manual brews ↓</a><a class="btn ghost" href="#merch">merch ↓</a></div>
     </div>
   </header>
   <section id="coffee" style="padding-top:0;padding-bottom:0;scroll-margin-top:80px">
@@ -203,6 +222,14 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
       <ol class="o-menu" id="menu">
         <li class="o-skel"></li><li class="o-skel"></li><li class="o-skel"></li>
       </ol>
+    </div>
+  </section>
+  <section class="o-brew-sec" id="brews" style="scroll-margin-top:60px;display:none">
+    <div class="wrap">
+      <p class="kicker">manual brews</p>
+      <h2>slow bar.</h2>
+      <p class="lede" style="max-width:26em">pick a method, hot or iced, and the beans from this fortnight's board. made by hand.</p>
+      <div class="o-brew" id="brewBox"></div>
     </div>
   </section>
   <section class="o-merch-sec" id="merch" style="scroll-margin-top:60px">
@@ -248,6 +275,7 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/data/arrivals.js"></script>
 <script>
 const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
 const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
@@ -315,27 +343,40 @@ function flipRow(row, words){
 /* ---------- menu + cart ---------- */
 /* cart keys: "id", "id|size" for merch, "id||shot" for drinks with add-ons */
 let menu = [], cart = store.get("0866_cart") || {}, method = "upi", chosen = {}, opts = {};
-const splitKey = k => { const [id, size, adds] = k.split("|"); return { id, size: size || "", addons: adds ? adds.split(",") : [] }; };
+/* brews add a 4th part: "id|||temp~ORIGIN" */
+const splitKey = k => { const [id, size, adds, chs] = k.split("|"); const [temp, bean] = (chs || "").split("~");
+  return { id, size: size || "", addons: adds ? adds.split(",") : [], temp: temp || "", bean: bean || "" }; };
+let beanStock = {}, bsel = { method: null, temp: null, bean: null };
+const boardBeans = () => ((window.ARRIVALS && window.ARRIVALS.beans) || []).filter(b => b.origin);
+const beanOf = origin => boardBeans().find(b => b.origin === origin);
+const beanPrem = origin => (beanStock[origin] && beanStock[origin].premium) || 0;
+const beanOut = origin => !!(beanStock[origin] && beanStock[origin].sold_out);
+async function loadBeans(){
+  try { const r = await fetch(`${SB}/rest/v1/bean_stock?select=origin,sold_out,premium`, { headers: H });
+    if (r.ok) { beanStock = {}; (await r.json()).forEach(b => beanStock[b.origin] = b); renderBrews(); renderCart(); } } catch {}
+}
 const keyFor = id => (opts[id] || []).length ? `${id}||${[...opts[id]].sort().join(",")}` : id;
 const addonInfo = (m, keys) => keys.map(k => (m.addons || []).find(a => a.key === k)).filter(Boolean);
 
 async function loadMenu(){
   try {
-    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,image,image_full,sizes,sold_out_sizes,available,addons&order=sort.asc,created_at.asc`, { headers: H });
+    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,image,image_full,sizes,sold_out_sizes,available,addons,choices&order=sort.asc,created_at.asc`, { headers: H });
     if (!r.ok) throw 0;
     menu = await r.json();
-    for (const k in cart) { const { id, size, addons } = splitKey(k), m = menu.find(x => x.id === id);
-      if (!m || ((m.sizes || []).length ? !m.sizes.includes(size) : size) || addonInfo(m, addons).length !== addons.length) delete cart[k]; }
+    for (const k in cart) { const { id, size, addons, temp, bean } = splitKey(k), m = menu.find(x => x.id === id);
+      if (!m || ((m.sizes || []).length ? !m.sizes.includes(size) : size) || addonInfo(m, addons).length !== addons.length
+          || ((m.choices || []).length && (!temp || !beanOf(bean)))) delete cart[k]; }
     /* arriving from the menu page with ?add=<id> puts that drink in the cart once */
     const add = new URLSearchParams(location.search).get("add");
     if (add) {
       history.replaceState(null, "", location.pathname + location.hash);
       const m = menu.find(x => x.id === add);
-      if (m && m.available && !(m.sizes || []).length) { cart[add] = Math.min((cart[add] || 0) + 1, 20); setTimeout(() => toast(`added ${m.name}`), 300); }
+      if (m && m.category === "brew") { if (m.available) bsel.method = m.id; setTimeout(() => document.getElementById("brews").scrollIntoView(), 300); }
+      else if (m && m.available && !(m.sizes || []).length) { cart[add] = Math.min((cart[add] || 0) + 1, 20); setTimeout(() => toast(`added ${m.name}`), 300); }
       else if (m && (m.sizes || []).length) setTimeout(() => document.getElementById("merch").scrollIntoView(), 300);
     }
     store.set("0866_cart", cart);
-    renderMenu(); renderMerch(); renderCart();
+    renderMenu(); renderBrews(); renderMerch(); renderCart();
   } catch {
     if (menu.length) return;   // keep showing the last good menu if a refresh fails
     $("#menu").innerHTML = `<li class="o-item"><div><h3 class="o-name">the menu didn't load.</h3><p class="o-desc">check your connection and <a href="" class="textlink">try again</a>.</p></div></li>`;
@@ -344,12 +385,40 @@ async function loadMenu(){
 /* sold out changes arrive instantly over realtime; a 30s refresh backs it up */
 let menuTimer;
 const refreshMenu = () => { clearTimeout(menuTimer); menuTimer = setTimeout(loadMenu, 200); };
-try { window.supabase.createClient(SB, KEY).channel("menu").on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, refreshMenu).subscribe(); } catch {}
+try { const sbc = window.supabase.createClient(SB, KEY);
+  sbc.channel("menu").on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, refreshMenu).subscribe();
+  sbc.channel("beans").on("postgres_changes", { event: "*", schema: "public", table: "bean_stock" }, () => loadBeans()).subscribe(); } catch {}
 setInterval(() => { if (!document.hidden && $("#orderView").className.indexOf("show") < 0) loadMenu(); }, 30000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) loadMenu(); });
-const isOut = l => !l.m.available || (l.size && (l.m.sold_out_sizes || []).includes(l.size));
+const isOut = l => !l.m.available || (l.size && (l.m.sold_out_sizes || []).includes(l.size)) || (l.bean && beanOut(l.bean));
 
-const coffee = () => menu.filter(m => m.category !== "merch");
+const coffee = () => menu.filter(m => m.category !== "merch" && m.category !== "brew");
+const brews = () => menu.filter(m => m.category === "brew");
+function renderBrews(){
+  const list = brews(), beansOnBoard = boardBeans();
+  $("#brews").style.display = list.length && beansOnBoard.length ? "" : "none";
+  document.querySelector('.o-jump a[href="#brews"]').style.display = list.length && beansOnBoard.length ? "" : "none";
+  if (!list.length) return;
+  if (bsel.method && !list.find(m => m.id === bsel.method && m.available)) bsel.method = null;
+  if (bsel.bean && (beanOut(bsel.bean) || !beanOf(bsel.bean))) bsel.bean = null;
+  const base = (list.find(m => m.id === bsel.method) || list[0]).price;
+  const price = base + (bsel.bean ? beanPrem(bsel.bean) : 0);
+  const temps = (((list[0].choices || []).find(c => c.key === "temp") || {}).options) || ["hot", "iced"];
+  $("#brewBox").innerHTML = `
+    <div class="o-bstep"><p class="o-blabel"><i>1</i>method</p><div class="o-bopts">${list.map(m => `
+      <button class="o-bopt" data-bmethod="${m.id}" aria-pressed="${bsel.method === m.id}"${m.available ? "" : " disabled"}><b>${esc(m.name)}</b><small>${m.available ? esc(m.description) : "sold out today"}</small></button>`).join("")}</div></div>
+    <div class="o-bstep"><p class="o-blabel"><i>2</i>hot or iced</p><div class="o-bopts two">${temps.map(t => `
+      <button class="o-bopt" data-btemp="${esc(t)}" aria-pressed="${bsel.temp === t}"><b>${esc(t)}</b></button>`).join("")}</div></div>
+    <div class="o-bstep"><p class="o-blabel"><i>3</i>beans</p><div class="o-bopts">${beansOnBoard.map(b => `
+      <button class="o-bopt" data-bbean="${esc(b.origin)}" aria-pressed="${bsel.bean === b.origin}"${beanOut(b.origin) ? " disabled" : ""}>
+        <b>${esc(b.name)}</b><small>${beanOut(b.origin) ? "ran out" : esc(b.tasting || "")}</small>${beanPrem(b.origin) ? `<span class="prem">premium +${rs(beanPrem(b.origin))}</span>` : ""}</button>`).join("")}</div></div>
+    <div class="o-bfoot"><span class="o-price">${rs(price)}</span><button class="btn o-add" data-addbrew>add to order</button></div>
+    <p class="o-hint" id="brewHint">${brewBag()}</p>`;
+}
+function brewBag(){
+  const got = lines().filter(l => l.m.category === "brew").map(l => `${esc(l.m.name)} · ${esc(l.temp)} · ${esc((beanOf(l.bean) || {}).name || l.bean)} × ${l.qty}`);
+  return got.length ? `in your order: ${got.join(", ")}` : "";
+}
 const merch = () => menu.filter(m => m.category === "merch");
 function renderMenu(){
   $("#menu").innerHTML = coffee().map((m, i) => `
@@ -426,6 +495,15 @@ document.addEventListener("click", e => {
     setQty(key, (cart[key] || 0) + 1); bump();
     toast(`added ${m.name} to your order`);
   }
+  const bm = e.target.closest("[data-bmethod]"), bt = e.target.closest("[data-btemp]"), bb = e.target.closest("[data-bbean]"), ab = e.target.closest("[data-addbrew]");
+  if (bm || bt || bb) { if (bm) bsel.method = bm.dataset.bmethod; if (bt) bsel.temp = bt.dataset.btemp; if (bb) bsel.bean = bb.dataset.bbean; renderBrews(); }
+  if (ab) {
+    const miss = !bsel.method ? "pick a method first." : !bsel.temp ? "hot or iced?" : !bsel.bean ? "pick your beans." : "";
+    if (miss) { const h = $("#brewHint"); h.textContent = miss; h.classList.add("warn"); return; }
+    const key = `${bsel.method}|||${bsel.temp}~${bsel.bean}`, m = menu.find(x => x.id === bsel.method);
+    setQty(key, (cart[key] || 0) + 1); bump(); toast(`added ${bsel.temp} ${m.name}`);
+    bsel = { method: null, temp: null, bean: null }; renderBrews();
+  }
   const addon = e.target.closest("[data-addon]");
   if (addon){ const id = addon.dataset.for, k = addon.dataset.addon, cur = opts[id] || [];
     opts[id] = cur.includes(k) ? cur.filter(x => x !== k) : [...cur, k];
@@ -437,21 +515,22 @@ document.addEventListener("click", e => {
   if (zoom){ $("#zoomImg").src = zoom.dataset.zoom; $("#zoomImg").alt = zoom.getAttribute("aria-label"); $("#zoom").classList.add("show"); }
 });
 $("#zoom").onclick = () => $("#zoom").classList.remove("show");
-const lines = () => Object.entries(cart).map(([key, qty]) => { const { id, size, addons } = splitKey(key), m = menu.find(x => x.id === id);
+const lines = () => Object.entries(cart).map(([key, qty]) => { const { id, size, addons, temp, bean } = splitKey(key), m = menu.find(x => x.id === id);
   if (!m) return null; const ad = addonInfo(m, addons);
-  return { key, size, addons, ad, m, qty, unit: m.price + ad.reduce((t, a) => t + a.price, 0) }; }).filter(Boolean);
+  return { key, size, addons, ad, temp, bean, m, qty, unit: m.price + ad.reduce((t, a) => t + a.price, 0) + (bean ? beanPrem(bean) : 0) }; }).filter(Boolean);
 function renderCart(){
   const L = lines(), count = L.reduce((a, l) => a + l.qty, 0), total = L.reduce((a, l) => a + l.qty * l.unit, 0);
   $("#cnt").textContent = count; $("#barTotal").textContent = rs(total) + " →"; $("#sheetTotal").textContent = rs(total);
   $("#bar").classList.toggle("show", count > 0 && !$("#orderView").classList.contains("show"));
   $("#lines").innerHTML = L.map(l => `
-    <div class="o-line"><span class="nm">${esc(l.m.name)}${l.size ? ` · <span class="o-sz">${esc(l.size)}</span>` : ""}${l.ad.map(a => `<span class="o-lineadd">+ ${esc(a.label)}</span>`).join("")}<small>${rs(l.unit)} × ${l.qty} = ${rs(l.unit * l.qty)}</small>${isOut(l) ? `<span class="o-lineout">just sold out. please remove it.</span>` : ""}</span>
+    <div class="o-line"><span class="nm">${esc(l.m.name)}${l.size ? ` · <span class="o-sz">${esc(l.size)}</span>` : ""}${l.ad.map(a => `<span class="o-lineadd">+ ${esc(a.label)}</span>`).join("")}${l.temp ? `<span class="o-lineadd">${esc(l.temp)} · ${esc((beanOf(l.bean) || {}).name || l.bean)}${beanPrem(l.bean) ? " (premium)" : ""}</span>` : ""}<small>${rs(l.unit)} × ${l.qty} = ${rs(l.unit * l.qty)}</small>${isOut(l) ? `<span class="o-lineout">just sold out. please remove it.</span>` : ""}</span>
       <span class="o-step"><button data-dec="${esc(l.key)}" aria-label="one less">−</button><b>${l.qty}</b><button data-inc="${esc(l.key)}" aria-label="one more">+</button></span></div>`).join("")
     || `<p class="o-desc" style="padding:16px 0">nothing here yet.</p>`;
   const anyOut = L.some(isOut), err = $("#err");
   $("#place").disabled = anyOut;
   if (anyOut) err.textContent = "something in your order just sold out. remove it to continue.";
   else if (/just sold out/.test(err.textContent)) err.textContent = "";
+  const bh = document.getElementById("brewHint"); if (bh && !bh.classList.contains("warn")) bh.innerHTML = brewBag();
   if (!count && $("#sheet").classList.contains("show")) closeSheet();
 }
 const openSheet = () => { $("#scrim").classList.add("show"); $("#sheet").classList.add("show"); $("#err").textContent = ""; };
@@ -469,13 +548,14 @@ $("#place").onclick = async () => {
   if (!name){ $("#err").textContent = "tell us your name, so we know whose coffee it is."; $("#cname").focus(); return; }
   const phone = cleanPhone($("#cphone").value);
   if (phone && !/^[6-9]\d{9}$/.test(phone)) { $("#err").textContent = "that whatsapp number doesn't look right. use 10 digits, or leave it empty."; $("#cphone").focus(); return; }
-  const items = lines().map(l => ({ id: l.m.id, qty: l.qty, size: l.size || null, addons: l.addons })); if (!items.length) return;
+  const items = lines().map(l => ({ id: l.m.id, qty: l.qty, size: l.size || null, addons: l.addons,
+    choices: l.temp ? { temp: l.temp, bean: l.bean, bean_name: (beanOf(l.bean) || {}).name || l.bean } : undefined })); if (!items.length) return;
   const btn = $("#place"); btn.disabled = true; btn.textContent = "sending to the counter…"; $("#err").textContent = "";
   try {
     const res = await rpc("place_order", { p_name: name, p_items: items, p_method: method, p_note: $("#cnote").value.trim() });
     if (phone) { store.set("0866_phone", phone); try { await rpc("set_order_phone", { p_id: res.id, p_phone: phone }); } catch {} }
     store.set("0866_name", name); cart = {}; store.set("0866_cart", cart); $("#cnote").value = ""; store.set("0866_order", res.id);
-    closeSheet(); renderMenu(); renderMerch(); renderCart();
+    closeSheet(); renderMenu(); renderBrews(); renderMerch(); renderCart();
     location.hash = "order=" + res.id; beans();
   } catch (e) {
     $("#err").textContent = e.message; if (/sold out|no longer/.test(e.message)) loadMenu();
@@ -508,26 +588,26 @@ async function showOrder(id){
   await tick(); poll = setInterval(tick, 5000);
 }
 function renderOrder(o){
-  const [word, msg] = STATUS[o.status] || STATUS.new;
+  let [word, msg] = STATUS[o.status] || STATUS.new;
+  if (o.status === "new" && o.payment_status !== "paid") msg = "checked in. we start making it once your payment comes through.";
   if (lastStatus && lastStatus !== "ready" && o.status === "ready"){ if (navigator.vibrate) navigator.vibrate([200, 100, 200]); beans(); }
   lastStatus = o.status;
-  const key = o.status + o.payment_status + (o.utr || "") + (o.has_proof ? "p" + o.proof_at : "");
+  const key = o.status + o.payment_status + (o.utr || "") + (o.has_proof ? "p" + o.proof_at : "") + "t" + o.total + "n" + o.items.length;
   if (last === key){ return; }
   const firstPaint = !rows; last = key;
   let pay = "";
   if (o.payment_status === "paid") pay = `<div class="o-paid"><i></i>paid. thank you.${o.receipt_no ? `<span style="margin-left:auto;font:700 13px var(--board);letter-spacing:.06em;font-style:normal">${esc(o.receipt_no)}</span>` : ""}</div>`;
   else if (o.status === "cancelled") pay = "";
-  else if (o.payment_method === "cash") pay = `<div class="o-paybox"><p class="kicker">pay at the counter</p><div class="o-amt">${rs(o.total)}</div><p class="o-help" style="margin:0">cash when you collect. show order <b>${pad(o.order_no)}</b> when you pay.</p></div>`;
-  else pay = `<div class="o-paybox"><p class="kicker">pay by upi</p><div class="o-amt">${rs(o.total)}</div>
+  else if (o.payment_method === "cash") pay = `<div class="o-paybox"><p class="kicker">pay first, then we start brewing</p><div class="o-amt">${rs(o.total)}</div><p class="o-help" style="margin:0">please pay cash at the counter and show order <b>${pad(o.order_no)}</b>. we start making it once you've paid.</p></div>`;
+  else pay = `<div class="o-paybox"><p class="kicker">pay first, then we start brewing</p><div class="o-amt">${rs(o.total)}</div>
       <ol class="o-steps">
-        <li><b>at the café?</b> scan the 0866 upi qr at the counter with any upi app and pay <b>${rs(o.total)}</b>.</li>
-        <li><b>paying from your phone?</b> tap below to open your upi app, then type <b>${rs(o.total)}</b> and pay.</li>
+        <li>scan the <b>pay here</b> qr on your table or at the counter with any upi app.</li>
+        <li>type <b>${rs(o.total)}</b> and pay. if your app asks for a note, write <b>${pad(o.order_no)}</b>.</li>
+        <li>send us the screenshot below. we start as soon as the payment shows up at the counter.</li>
       </ol>
-      <a class="btn" href="upi://pay?pa=${UPI_ID}&pn=0866&cu=INR">open upi app · type ${rs(o.total)}</a>
-      <div class="o-apps"><a class="btn ghost" href="gpay://upi/pay?pa=${UPI_ID}&pn=0866&cu=INR">gpay</a><a class="btn ghost" href="phonepe://pay?pa=${UPI_ID}&pn=0866&cu=INR">phonepe</a><a class="btn ghost" href="paytmmp://pay?pa=${UPI_ID}&pn=0866&cu=INR">paytm</a></div>
-      <p class="o-help" style="margin-top:14px">app showing an error? copy our upi id and pay to it by hand:</p>
+      <p class="o-help" style="margin-top:14px">no qr near you? copy our upi id and pay to it in any upi app:</p>
       <div class="o-copy"><span>${UPI_ID}</span><button onclick="copyUpi()">copy upi id</button></div>
-      <p class="o-help">or pay to the phone number <b>63035 21185</b>. if your app asks for a note, write <b>${pad(o.order_no)}</b>.</p>
+      <p class="o-help">or pay to the phone number <b>63035 21185</b>.</p>
       <div class="o-proof">
         ${o.has_proof
           ? `<p class="o-proof-done"><i></i>screenshot sent. the counter will confirm your payment in a moment.</p>
@@ -551,7 +631,7 @@ function renderOrder(o){
         <div class="pass-label">flight status</div>
         <div class="board o-fboard" id="fboard"><div class="board-top"><span class="board-title">departures</span></div></div>
         <p class="o-msg">${msg}</p>
-        <ul class="o-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <span class="o-sz">${esc(i.size)}</span>` : ""}${(i.addons || []).map(a => ` + ${esc(a)}`).join("")} × ${i.qty}</span><b>${rs(i.price * i.qty)}</b></li>`).join("")}
+        <ul class="o-items">${o.items.map(i => `<li><span>${esc(i.name)}${i.size ? ` · <span class="o-sz">${esc(i.size)}</span>` : ""}${(i.addons || []).map(a => ` + ${esc(a)}`).join("")}${(i.options || []).map(a => ` · ${esc(a)}`).join("")} × ${i.qty}</span><b>${rs(i.price * i.qty)}</b></li>`).join("")}
           <li class="tot"><span>total</span><b>${rs(o.total)}</b></li></ul>
       </div>
       <div class="pass-stub">
@@ -611,24 +691,35 @@ function route(){
 }
 addEventListener("hashchange", route);
 
-/* a little shower of beans */
+/* a little shower of beans. time-based, and the canvas is hidden afterwards so nothing can stay stuck on screen */
+let beansRun = 0;
 function beans(){
   if (reduce) return;
-  const c = $("#beans"), x = c.getContext("2d"), dpr = devicePixelRatio || 1; c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const c = $("#beans"), run = ++beansRun, dpr = Math.min(devicePixelRatio || 1, 2);
+  const W = document.documentElement.clientWidth, Ht = window.innerHeight;
+  c.style.display = "block"; c.style.width = W + "px"; c.style.height = Ht + "px";
+  c.width = W * dpr; c.height = Ht * dpr;
+  const x = c.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0);
   const cols = ["#39180F", "#6E1A14", "#A8783A", "#D9732B", "#E2B33C"];
-  const P = Array.from({ length: 70 }, () => ({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * .6, vy: 2 + Math.random() * 3, vx: (Math.random() - .5) * 1.2, r: Math.random() * 6, vr: (Math.random() - .5) * .12, s: 7 + Math.random() * 6, c: cols[Math.random() * cols.length | 0] }));
-  let f = 0;
-  (function draw(){
-    x.clearRect(0, 0, innerWidth, innerHeight);
-    P.forEach(p => { p.vy += .06; p.x += p.vx; p.y += p.vy; p.r += p.vr;
-      x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c;
+  const P = Array.from({ length: 60 }, () => ({ x: Math.random() * W, y: -30 - Math.random() * Ht * .5, v: 260 + Math.random() * 260, vx: (Math.random() - .5) * 60, r: Math.random() * 6, vr: (Math.random() - .5) * 6, s: 7 + Math.random() * 6, c: cols[Math.random() * cols.length | 0] }));
+  const t0 = performance.now(), D = 2600;
+  const stop = () => { if (run !== beansRun) return; x.clearRect(0, 0, W, Ht); c.style.display = "none"; };
+  setTimeout(stop, D + 600);                       // safety net, even if frames are paused
+  (function draw(now){
+    if (run !== beansRun) return;
+    const t = Math.min((now - t0) / 1000, D / 1000);
+    x.clearRect(0, 0, W, Ht);
+    let alive = 0;
+    P.forEach(p => { const y = p.y + p.v * t + 380 * t * t; if (y > Ht + 30) return; alive++;
+      x.save(); x.translate(p.x + p.vx * t, y); x.rotate(p.r + p.vr * t); x.fillStyle = p.c;
       x.beginPath(); x.ellipse(0, 0, p.s * .72, p.s, 0, 0, 7); x.fill();
       x.strokeStyle = "#F1EADB"; x.lineWidth = 1.4; x.beginPath(); x.moveTo(p.s * .1, -p.s * .8); x.quadraticCurveTo(-p.s * .35, 0, p.s * .1, p.s * .8); x.stroke(); x.restore(); });
-    if (++f < 200) requestAnimationFrame(draw); else x.clearRect(0, 0, innerWidth, innerHeight);
-  })();
+    if (alive && now - t0 < D) requestAnimationFrame(draw); else stop();
+  })(t0);
 }
+document.addEventListener("visibilitychange", () => { if (document.hidden) { beansRun++; const c = $("#beans"); c.getContext("2d").clearRect(0, 0, c.width, c.height); c.style.display = "none"; } });
 
-loadMenu();
+loadMenu(); loadBeans();
 if (!location.hash && store.get("0866_order")) {
   rpc("get_order", { p_id: store.get("0866_order") }).then(o => {
     if (o && !["done", "cancelled"].includes(o.status) && (Date.now() - new Date(o.created_at)) < 6 * 3600e3) {
