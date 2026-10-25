@@ -277,7 +277,8 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/data/arrivals.js"></script>
 <script>
-const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+const SB_DIRECT = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+const SB = "/sb";   // database calls go through 0866.in, because some indian internet providers block supabase.co
 const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
 const UPI_ID = "6303521185@ybl";
 const UPI_NAME = "0866";
@@ -385,7 +386,7 @@ async function loadMenu(){
 /* sold out changes arrive instantly over realtime; a 30s refresh backs it up */
 let menuTimer;
 const refreshMenu = () => { clearTimeout(menuTimer); menuTimer = setTimeout(loadMenu, 200); };
-try { const sbc = window.supabase.createClient(SB, KEY);
+try { const sbc = window.supabase.createClient(SB_DIRECT, KEY);
   sbc.channel("menu").on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, refreshMenu).subscribe();
   sbc.channel("beans").on("postgres_changes", { event: "*", schema: "public", table: "bean_stock" }, () => loadBeans()).subscribe(); } catch {}
 setInterval(() => { if (!document.hidden && $("#orderView").className.indexOf("show") < 0) loadMenu(); }, 30000);

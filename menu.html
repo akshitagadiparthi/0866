@@ -67,7 +67,7 @@
 <script src="assets/site.js"></script>
 <script>
 (function () {
-  const SB = "https://bzdgzfepkgwizvhpvuwe.supabase.co";
+  const SB = "/sb";   // goes through 0866.in, because some indian internet providers block supabase.co
   const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6ZGd6ZmVwa2d3aXp2aHB2dXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjYzMjYsImV4cCI6MjEwODAwMjMyNn0.e-LJedk3DSsBL6IiqaGtCgqgXMJWrK_BATcDvTlUjOo";
   const POPS = ["tangerine", "caramel", "monsoon", "mango", "red", "bronze"];
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
