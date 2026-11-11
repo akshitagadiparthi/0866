@@ -21,16 +21,24 @@ input { text-transform: none; }
 .o-head .lede { max-width: 22em; }
 @media (max-width: 720px) { .o-head .badge { width: 84px; top: 34px; right: 16px; } .o-head h1 { padding-right: 70px; } }
 
-/* jump links */
-.o-jump { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
-.o-jump a { font-size: 16px; padding: .45em 1.1em; }
+/* section tabs: one section at a time, so the page stays short */
+.o-tabs { position: sticky; top: var(--hh, 68px); z-index: 30; background: color-mix(in srgb, var(--paper) 92%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--bronze-soft); }
+.o-tabs-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 10px 0; -webkit-overflow-scrolling: touch; }
+.o-tabs-row::-webkit-scrollbar { display: none; }
+.o-tabs button { flex: none; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--ink); background: none; color: var(--ink); border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 16px; cursor: pointer; white-space: nowrap; }
+.o-tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.o-tabs button .c { font-family: var(--board); font-weight: 700; font-size: 12px; background: var(--mango); color: var(--ink); border-radius: 999px; padding: 0 7px; line-height: 18px; }
+.o-tabs button .c:empty { display: none; }
+.o-panel { padding: 24px 0 170px; }
+.o-panel[hidden] { display: none !important; }
+#coffee .o-menu { border-top: 0; }
+.o-panel h2 { font-size: clamp(34px, 5vw, 56px); margin-bottom: .15em; }
+.o-panel > .wrap > .lede { font-size: clamp(17px, 1.3vw + 10px, 22px); }
 
 /* menu list */
 .o-menu { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--bronze-soft); }
 
 /* manual brews */
-.o-brew-sec { padding: clamp(56px, 8vw, 100px) 0 0; }
-.o-brew-sec h2 { margin-bottom: .2em; }
 .o-brew { margin-top: 30px; background: #FFFCF6; border: 1px solid rgba(57,24,15,.16); border-radius: 18px; padding: clamp(18px, 3vw, 30px); box-shadow: 0 24px 50px -36px rgba(57,24,15,.6); }
 .o-bstep { padding: 4px 0 22px; }
 .o-bstep + .o-bstep { border-top: 1px dashed rgba(57,24,15,.25); padding-top: 18px; }
@@ -48,11 +56,42 @@ input { text-transform: none; }
 .o-bfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--bronze-soft); padding-top: 18px; }
 
 /* merch */
-.o-food-sec { padding: clamp(56px, 8vw, 100px) 0 0; }
-.o-food-sec h2 { margin-bottom: .2em; }
-.o-food-sec .o-menu { margin-top: 30px; }
-.o-merch-sec { padding: clamp(56px, 8vw, 100px) 0 170px; }
-.o-merch-sec h2 { margin-bottom: .2em; }
+/* food: photo cards, two across on a phone */
+.o-fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px 18px; margin-top: 22px; }
+@media (max-width: 560px) { .o-fgrid { grid-template-columns: 1fr 1fr; gap: 16px 12px; } }
+.o-fcard { display: flex; flex-direction: column; min-width: 0; background: #FFFCF6; border: 1px solid rgba(57,24,15,.14); border-radius: 16px; overflow: hidden; box-shadow: 0 18px 36px -28px rgba(57,24,15,.55); }
+.o-fcard.pop { animation: o-bump .4s; }
+.o-fcard.o-out .o-fph, .o-fcard.o-out .o-name, .o-fcard.o-out .o-desc { opacity: .45; }
+.o-fph { position: relative; display: block; width: 100%; aspect-ratio: 1; border: 0; padding: 0; overflow: hidden; background: radial-gradient(circle at 50% 54%, color-mix(in srgb, var(--pop, var(--bronze)) 20%, var(--paper)) 0 58%, var(--paper-deep) 59%); }
+button.o-fph { cursor: zoom-in; }
+.o-fph img { width: 100%; height: 100%; object-fit: cover; }
+.o-fph .o-tag { position: absolute; left: 10px; top: 10px; background: rgba(255,252,246,.92); color: var(--ink); border-color: transparent; font-family: var(--board); font-weight: 700; text-transform: uppercase; }
+/* drawn stand-ins until real photos are added */
+.o-waffle { position: absolute; inset: 21%; border-radius: 22%; transform: rotate(-9deg); background:
+    repeating-linear-gradient(0deg, transparent 0 15%, rgba(122,69,25,.4) 15% 20%),
+    repeating-linear-gradient(90deg, transparent 0 15%, rgba(122,69,25,.4) 15% 20%), #E6B868;
+  box-shadow: inset 0 0 0 5px #CF9748, 0 12px 20px -10px rgba(57,24,15,.55); }
+.o-waffle::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background:
+    linear-gradient(32deg, transparent 0 22%, var(--s1) 22% 27%, transparent 27% 47%, var(--s2, var(--s1)) 47% 52%, transparent 52% 72%, var(--s1) 72% 77%, transparent 77%),
+    radial-gradient(circle at 50% 50%, var(--s1) 0 21%, transparent 22%);
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 0 64%, transparent 66%); mask: radial-gradient(circle at 50% 50%, #000 0 64%, transparent 66%); }
+.o-waffle::before { content: ""; position: absolute; left: 39%; top: 38%; width: 24%; height: 24%; border-radius: 50%; background: var(--s2, var(--s1)); box-shadow: inset -3px -4px 0 rgba(0,0,0,.12); z-index: 1; }
+.o-loaf { position: absolute; left: 23%; right: 23%; top: 24%; bottom: 22%; transform: rotate(-6deg); border-radius: 42% 42% 10% 10% / 32% 32% 10% 10%; background:
+    radial-gradient(circle at 30% 40%, #6B3E1E 0 2.5%, transparent 3%), radial-gradient(circle at 62% 56%, #6B3E1E 0 2%, transparent 2.5%),
+    radial-gradient(circle at 46% 72%, #6B3E1E 0 2.5%, transparent 3%), radial-gradient(circle at 70% 34%, #6B3E1E 0 2%, transparent 2.5%), #E4BE82;
+  box-shadow: inset 0 0 0 8px #8C5427, 0 12px 20px -10px rgba(57,24,15,.55); }
+.o-fbody { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.o-fbody .o-code { font-size: 11px; letter-spacing: .14em; }
+.o-fcard .o-name { font-size: clamp(22px, 2.4vw, 28px); line-height: 1.05; margin: 0; }
+.o-fcard .o-desc { font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.o-fcard .o-addons { margin-top: 4px; }
+.o-fcard .o-addon { font-size: 13.5px; padding: 5px 10px; }
+.o-fcard .o-hint { font-size: 13px; margin: 0; }
+.o-ffoot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 8px; }
+.o-fcard .o-price { font-size: 19px; }
+.o-fcard .o-add { font-size: 15px; padding: .45em 1em; }
+.o-fcard .o-step button { width: 34px; height: 34px; font-size: 18px; }
+@media (max-width: 380px) { .o-fbody { padding: 10px 9px 12px; } .o-fcard .o-add { padding: .45em .8em; } .o-fcard .o-step button { width: 30px; } }
 .o-merch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: clamp(36px, 4vw, 52px) clamp(24px, 3vw, 40px); margin-top: 40px; }
 .o-merch { display: flex; flex-direction: column; }
 .o-mimg { position: relative; display: block; width: 100%; padding: 10px 10px 0; border: 0; background: #FFFCF6; cursor: zoom-in; box-shadow: 0 18px 40px -20px rgba(57,24,15,.45); transform: rotate(var(--tilt, -1.5deg)); transition: transform .45s cubic-bezier(.3,1.5,.5,1); }
@@ -112,6 +151,14 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
 @keyframes o-pop { 40% { transform: translateX(6px); } }
 .o-skel { height: 120px; border-bottom: 1px solid var(--bronze-soft); background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,.5) 50%, transparent 80%) 0 0 / 200% 100%; animation: o-sh 1.3s infinite; }
 @keyframes o-sh { to { background-position: -200% 0; } }
+@media (max-width: 720px) {
+  .o-item { padding: 16px 0 16px 14px; gap: 4px 14px; }
+  .o-item::before { top: 16px; bottom: 16px; }
+  .o-item .o-name { font-size: 27px; }
+  .o-item .o-desc { font-size: 15px; }
+  .o-price { font-size: 20px; }
+  .o-head.page-head { padding-bottom: 18px; }
+}
 
 /* cart bar */
 .o-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 12px var(--gutter) calc(14px + env(safe-area-inset-bottom)); transform: translateY(140%); transition: transform .4s cubic-bezier(.3,1.4,.5,1); }
@@ -217,17 +264,22 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
       <p class="kicker">order from your seat</p>
       <h1>check in.</h1>
       <p class="lede">pick your coffee, pay by upi or cash, and we'll call your number when it lands.</p>
-      <div class="o-jump"><a class="btn ghost" href="#coffee">coffee ↓</a><a class="btn ghost" href="#brews">manual brews ↓</a><a class="btn ghost" href="#food" style="display:none">waffles &amp; food ↓</a><a class="btn ghost" href="#merch">merch ↓</a></div>
     </div>
   </header>
-  <section id="coffee" style="padding-top:0;padding-bottom:0;scroll-margin-top:80px">
+  <nav class="o-tabs" id="tabs" aria-label="menu sections"><div class="wrap"><div class="o-tabs-row" role="tablist">
+    <button role="tab" data-tab="coffee" aria-selected="true">coffee<span class="c"></span></button>
+    <button role="tab" data-tab="brews" aria-selected="false">slow bar<span class="c"></span></button>
+    <button role="tab" data-tab="food" aria-selected="false" hidden>waffles &amp; food<span class="c"></span></button>
+    <button role="tab" data-tab="merch" aria-selected="false">merch<span class="c"></span></button>
+  </div></div></nav>
+  <section class="o-panel" id="coffee">
     <div class="wrap">
       <ol class="o-menu" id="menu">
         <li class="o-skel"></li><li class="o-skel"></li><li class="o-skel"></li>
       </ol>
     </div>
   </section>
-  <section class="o-brew-sec" id="brews" style="scroll-margin-top:60px;display:none">
+  <section class="o-panel" id="brews" hidden>
     <div class="wrap">
       <p class="kicker">manual brews</p>
       <h2>slow bar.</h2>
@@ -235,15 +287,15 @@ label.o-link { display: inline-block; font-size: 15px; color: var(--ink-soft); }
       <div class="o-brew" id="brewBox"></div>
     </div>
   </section>
-  <section class="o-food-sec" id="food" style="scroll-margin-top:60px;display:none">
+  <section class="o-panel" id="food" hidden>
     <div class="wrap">
       <p class="kicker">in-flight snacks</p>
       <h2>loaded waffles.</h2>
       <p class="lede" style="max-width:26em">crisp waffles, loaded all the way. add a scoop of ice cream to any of them.</p>
-      <ol class="o-menu" id="foodMenu"></ol>
+      <div class="o-fgrid" id="foodMenu"></div>
     </div>
   </section>
-  <section class="o-merch-sec" id="merch" style="scroll-margin-top:60px">
+  <section class="o-panel" id="merch" hidden>
     <div class="wrap">
       <p class="kicker">carry-on</p>
       <h2>the merch.</h2>
@@ -372,7 +424,7 @@ const addonInfo = (m, keys) => keys.map(k => (m.addons || []).find(a => a.key ==
 
 async function loadMenu(){
   try {
-    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,image,image_full,sizes,sold_out_sizes,available,addons,choices&order=sort.asc,created_at.asc`, { headers: H });
+    const r = await fetch(`${SB}/rest/v1/menu_items?select=id,name,description,price,tag,category,kitchen_name,image,image_full,sizes,sold_out_sizes,available,addons,choices&order=sort.asc,created_at.asc`, { headers: H });
     if (!r.ok) throw 0;
     menu = await r.json();
     for (const k in cart) { const { id, size, addons, temp, bean } = splitKey(k), m = menu.find(x => x.id === id);
@@ -383,9 +435,9 @@ async function loadMenu(){
     if (add) {
       history.replaceState(null, "", location.pathname + location.hash);
       const m = menu.find(x => x.id === add);
-      if (m && m.category === "brew") { if (m.available) bsel.method = m.id; setTimeout(() => document.getElementById("brews").scrollIntoView(), 300); }
-      else if (m && m.available && !(m.sizes || []).length) { cart[add] = Math.min((cart[add] || 0) + 1, 20); setTimeout(() => toast(`added ${m.name}`), 300); }
-      else if (m && (m.sizes || []).length) setTimeout(() => document.getElementById("merch").scrollIntoView(), 300);
+      if (m && m.category === "brew") { if (m.available) bsel.method = m.id; setTimeout(() => showTab("brews"), 50); }
+      else if (m && m.available && !(m.sizes || []).length) { cart[add] = Math.min((cart[add] || 0) + 1, 20); setTimeout(() => { if (m.category === "food") showTab("food"); toast(`added ${m.name}`); }, 300); }
+      else if (m && (m.sizes || []).length) setTimeout(() => showTab("merch"), 50);
     }
     store.set("0866_cart", cart);
     renderMenu(); renderBrews(); renderMerch(); renderCart();
@@ -409,8 +461,7 @@ const food = () => menu.filter(m => m.category === "food");
 const brews = () => menu.filter(m => m.category === "brew");
 function renderBrews(){
   const list = brews(), beansOnBoard = boardBeans();
-  $("#brews").style.display = list.length && beansOnBoard.length ? "" : "none";
-  document.querySelector('.o-jump a[href="#brews"]').style.display = list.length && beansOnBoard.length ? "" : "none";
+  showTabBtn("brews", list.length && beansOnBoard.length);
   if (!list.length) return;
   if (bsel.method && !list.find(m => m.id === bsel.method && m.available)) bsel.method = null;
   if (bsel.bean && (beanOut(bsel.bean) || !beanOf(bsel.bean))) bsel.bean = null;
@@ -436,9 +487,34 @@ const merch = () => menu.filter(m => m.category === "merch");
 function renderMenu(){
   $("#menu").innerHTML = coffee().map((m, i) => itemRow(m, i, `0866·${pad(i + 1)}`, 0)).join("") || `<li class="o-item"><p class="o-desc">nothing on the menu right now.</p></li>`;
   const f = food();
-  $("#food").style.display = f.length ? "" : "none";
-  document.querySelector('.o-jump a[href="#food"]').style.display = f.length ? "" : "none";
-  $("#foodMenu").innerHTML = f.map((m, i) => itemRow(m, i, `0866·f${i + 1}`, 1)).join("");
+  showTabBtn("food", f.length);
+  $("#foodMenu").innerHTML = f.map(foodCard).join("");
+}
+/* food card: a photo when one is set (menu & prices → photo), a drawn stand-in until then */
+const SAUCES = [["butterscotch", "milk", "#7A4528", "#D8962F"], ["white", "", "#F7EFDD"], ["dark", "", "#3A2116"], ["milk", "", "#7A4528"],
+                ["butterscotch", "", "#D8962F"], ["red velvet", "", "#9C2230"]];
+function standIn(m){
+  const k = `${m.kitchen_name || ""} ${m.tag || ""} ${m.name}`.toLowerCase();
+  if (!(m.addons || []).length && /bread|loaf|cake/.test(k)) return `<span class="o-loaf"></span>`;
+  const s = SAUCES.find(([a, b]) => k.includes(a) && (!b || k.includes(b))) || ["", "", "#7A4528"];
+  return `<span class="o-waffle" style="--s1:${s[2]};${s[3] ? `--s2:${s[3]}` : ""}"></span>`;
+}
+function foodCard(m, i){
+  const tag = m.tag ? `<span class="o-tag">${esc(m.tag)}</span>` : "";
+  const ph = m.image ? `<button class="o-fph" data-zoom="${esc(m.image_full || m.image)}" aria-label="photo of ${esc(m.name)}"><img src="${esc(m.image)}" alt="${esc(m.name)}" loading="lazy" width="600" height="600">${tag}</button>`
+                     : `<div class="o-fph" aria-hidden="true">${standIn(m)}${tag}</div>`;
+  return `
+    <article class="o-fcard pop-${POPS[(i + 1) % POPS.length]}${m.available ? "" : " o-out"}" data-id="${m.id}">
+      ${ph}
+      <div class="o-fbody">
+        <div class="o-code">0866·f${i + 1}</div>
+        <h3 class="o-name">${esc(m.name)}</h3>
+        <p class="o-desc">${esc(m.description)}</p>
+        ${m.available && (m.addons || []).length ? `<div class="o-addons">${m.addons.map(a => `<button class="o-addon" data-addon="${esc(a.key)}" data-for="${m.id}" aria-pressed="${(opts[m.id] || []).includes(a.key)}" aria-label="add ${esc(a.label)} for ${rs(a.price)}">+ ${esc(a.label.replace(/^scoop of /, "").replace(/ of espresso$/, ""))} · ${rs(a.price)}</button>`).join("")}</div>` : ""}
+        <p class="o-hint" id="hint-${m.id}">${bagText(m.id)}</p>
+        <div class="o-ffoot"><span class="o-price">${rs(m.price + addonInfo(m, opts[m.id] || []).reduce((t, a) => t + a.price, 0))}</span>${m.available ? `<span class="ctl">${ctl(m.id)}</span>` : `<span class="o-outtag">sold out</span>`}</div>
+      </div>
+    </article>`;
 }
 /* one row of the list: coffee and food share it, so add-ons (extra shot, ice cream) work the same way */
 function itemRow(m, i, code, shift){
@@ -454,9 +530,7 @@ function itemRow(m, i, code, shift){
 function renderMerch(){
   const items = merch();
   items.forEach(m => { if (chosen[m.id] && (m.sold_out_sizes || []).includes(chosen[m.id])) delete chosen[m.id]; });
-  $("#merch").style.display = items.length ? "" : "none";
-  $("#coffee").style.paddingBottom = items.length ? "0" : "150px";
-  document.querySelector('.o-jump a[href="#merch"]').style.display = items.length ? "" : "none";
+  showTabBtn("merch", items.length);
   $("#merchGrid").innerHTML = items.map((m, i) => `
     <article class="o-merch pop-${POPS[(i + 2) % POPS.length]}${m.available ? "" : " o-out"}" data-mid="${m.id}">
       <button class="o-mimg" data-zoom="${esc(m.image_full || m.image)}" aria-label="see the full ${esc(m.name)} design">
@@ -476,7 +550,7 @@ function bagText(id){
   const got = Object.entries(cart).filter(([k]) => splitKey(k).id === id).map(([k, q]) => { const p = splitKey(k);
     const lbl = p.size ? `<span class="o-sz">${esc(p.size)}</span>` : "";
     const ad = m ? addonInfo(m, p.addons).map(a => "+ " + esc(a.label.replace(/ of espresso$/, ""))).join(" ") : "";
-    return `${[lbl, ad].filter(Boolean).join(" ") || "regular"} × ${q}`; });
+    return `${[lbl, ad].filter(Boolean).join(" ") || (m && (m.addons || []).length ? "plain" : "")} × ${q}`.trim(); });
   return got.length ? `in your order: ${got.join(", ")}` : "";
 }
 function ctl(id){
@@ -490,7 +564,7 @@ function setQty(key, q){
   if (q <= 0) delete cart[key]; else cart[key] = Math.min(q, 20);
   store.set("0866_cart", cart);
   const { id } = splitKey(key);
-  const row = document.querySelector(`.o-item[data-id="${id}"] .ctl`); if (row) row.innerHTML = ctl(id);
+  const row = document.querySelector(`[data-id="${id}"] .ctl`); if (row) row.innerHTML = ctl(id);
   const hint = document.getElementById("hint-" + id); if (hint) { hint.classList.remove("warn"); hint.innerHTML = bagText(id); }
   renderCart();
 }
@@ -499,7 +573,7 @@ document.addEventListener("click", e => {
   const inc = e.target.closest("[data-inc]"), dec = e.target.closest("[data-dec]");
   const size = e.target.closest("[data-size]"), addm = e.target.closest("[data-addm]"), zoom = e.target.closest("[data-zoom]");
   if (inc){ const key = inc.dataset.inc; setQty(key, (cart[key] || 0) + 1);
-    const it = document.querySelector(`.o-item[data-id="${splitKey(key).id}"]`);
+    const it = document.querySelector(`[data-id="${splitKey(key).id}"]`);
     if (it && !e.target.closest(".o-sheet")){ it.classList.remove("pop"); void it.offsetWidth; it.classList.add("pop"); }
     bump();
   }
@@ -528,7 +602,7 @@ document.addEventListener("click", e => {
   const addon = e.target.closest("[data-addon]");
   if (addon){ const id = addon.dataset.for, k = addon.dataset.addon, cur = opts[id] || [];
     opts[id] = cur.includes(k) ? cur.filter(x => x !== k) : [...cur, k];
-    const row = document.querySelector(`.o-item[data-id="${id}"]`), m = menu.find(x => x.id === id);
+    const row = document.querySelector(`[data-id="${id}"]`), m = menu.find(x => x.id === id);
     row.querySelectorAll("[data-addon]").forEach(b => b.setAttribute("aria-pressed", (opts[id] || []).includes(b.dataset.addon)));
     row.querySelector(".o-price").textContent = rs(m.price + addonInfo(m, opts[id]).reduce((t, a) => t + a.price, 0));
     row.querySelector(".ctl").innerHTML = ctl(id);
@@ -553,6 +627,9 @@ function renderCart(){
   else if (/just sold out/.test(err.textContent)) err.textContent = "";
   const bh = document.getElementById("brewHint"); if (bh && !bh.classList.contains("warn")) bh.innerHTML = brewBag();
   if (!count && $("#sheet").classList.contains("show")) closeSheet();
+  /* little counts on the tabs, so people see what's in the order from each section */
+  const sec = m => m.category === "brew" ? "brews" : m.category === "food" ? "food" : m.category === "merch" ? "merch" : "coffee";
+  document.querySelectorAll(".o-tabs [data-tab]").forEach(b => { const n = L.filter(l => sec(l.m) === b.dataset.tab).reduce((a, l) => a + l.qty, 0); b.querySelector(".c").textContent = n || ""; });
 }
 const openSheet = () => { $("#scrim").classList.add("show"); $("#sheet").classList.add("show"); $("#err").textContent = ""; };
 const closeSheet = () => { $("#scrim").classList.remove("show"); $("#sheet").classList.remove("show"); };
@@ -739,6 +816,31 @@ function beans(){
   })(t0);
 }
 document.addEventListener("visibilitychange", () => { if (document.hidden) { beansRun++; const c = $("#beans"); c.getContext("2d").clearRect(0, 0, c.width, c.height); c.style.display = "none"; } });
+
+/* ---------- tabs ---------- */
+const TABS = ["coffee", "brews", "food", "merch"];
+let tab = "coffee", want = (() => { try { return sessionStorage.getItem("0866_tab") || "coffee"; } catch { return "coffee"; } })();
+const tabBtn = t => document.querySelector(`.o-tabs [data-tab="${t}"]`);
+function showTab(t, scroll = true){
+  if (TABS.includes(t)) { want = t; try { sessionStorage.setItem("0866_tab", t); } catch {} }
+  if (!TABS.includes(t) || tabBtn(t).hidden) t = "coffee";   // that section is empty right now
+  tab = t;
+  TABS.forEach(x => { $("#" + x).hidden = x !== t; tabBtn(x).setAttribute("aria-selected", x === t); });
+  const b = tabBtn(t), row = b.parentElement; row.scrollTo({ left: b.offsetLeft - row.offsetLeft - (row.clientWidth - b.offsetWidth) / 2 });
+  if (scroll) { const top = $("#tabs").offsetTop - (parseInt(getComputedStyle(document.documentElement).getPropertyValue("--hh")) || 68);
+    if (scrollY > top) scrollTo({ top, behavior: reduce ? "auto" : "smooth" }); }
+}
+function showTabBtn(t, on){
+  const was = tabBtn(t).hidden; tabBtn(t).hidden = !on;
+  if (was !== !on && (tab === t || want === t)) { const w = want; showTab(t, false); want = w; }
+}
+document.querySelectorAll(".o-tabs [data-tab]").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+/* the tabs sit just under the sticky header */
+const setHH = () => document.documentElement.style.setProperty("--hh", document.querySelector(".site-header").offsetHeight + "px");
+setHH(); addEventListener("resize", setHH);
+/* old links like /order/#merch still land on the right tab */
+{ const h = location.hash.replace("#", ""); if (TABS.includes(h)) { want = h; history.replaceState(null, "", location.pathname + location.search); } }
+showTab(want, false);
 
 loadMenu(); loadBeans();
 if (!location.hash && store.get("0866_order")) {

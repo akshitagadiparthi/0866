@@ -73,6 +73,7 @@ main { padding: 22px 0 60px; }
 .s-mi .full .field { flex: 1; min-width: 160px; }
 .s-mi .field input { font-size: 17px; padding: 6px 2px; }
 .s-mi .act { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.s-sel { font: inherit; font-size: 17px; padding: 6px 2px; border: 0; border-bottom: 1.5px solid var(--ink); background: transparent; color: var(--ink); width: 100%; }
 .s-tog { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .s-tog input { width: 20px; height: 20px; accent-color: var(--ink); }
 .s-sort { width: 64px; margin-left: auto; font: inherit; border: 0; border-bottom: 1.5px solid var(--ink); background: rgba(255,255,255,.35); padding: 4px; }
@@ -466,7 +467,7 @@ $("#nTest").onclick = async () => {
 };
 
 function itemForm(m){
-  m = m || { id: "", emoji: "☕", name: "", price: "", description: "", tag: "", kitchen_name: "", available: true, sort: 99 };
+  m = m || { id: "", emoji: "☕", name: "", price: "", description: "", tag: "", kitchen_name: "", image: "", category: "", available: true, sort: 99 };
   return `<div class="s-mi ${m.available ? "" : "off"}" data-id="${m.id}">
     <div class="field"><label>name</label><input value="${esc(m.name)}" data-k="name"></div>
     <div class="field"><label>price (₹)</label><input value="${m.price}" data-k="price" type="number" inputmode="numeric" min="0"></div>
@@ -474,6 +475,8 @@ function itemForm(m){
       <div class="field"><label>description</label><input value="${esc(m.description)}" data-k="description"></div>
       <div class="field" style="max-width:180px"><label>tag (optional)</label><input value="${esc(m.tag)}" data-k="tag"></div>
       <div class="field"><label>name on the staff screen (optional)</label><input value="${esc(m.kitchen_name || "")}" data-k="kitchen_name" placeholder="e.g. milk chocolate waffle"></div>
+      ${!m.category || ["coffee", "food"].includes(m.category) ? `<div class="field" style="max-width:200px"><label>section</label><select data-k="category" class="s-sel"><option value="coffee"${m.category !== "food" ? " selected" : ""}>coffee</option><option value="food"${m.category === "food" ? " selected" : ""}>waffles &amp; food</option></select></div>` : ""}
+      <div class="field" style="flex-basis:100%"><label>photo (optional)</label><input value="${esc(m.image || "")}" data-k="image" placeholder="/order/food/milk-run.jpg"></div>
     </div>
     <input type="hidden" value="${esc(m.emoji)}" data-k="emoji">
     <div class="act">
