@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="assets/style.css">
 <script src="data/config.js"></script>
 <title>menu — 0866°</title>
-<meta name="description" content="the menu at 0866°, vijayawada. coffee and merch, with live prices. order from your seat.">
+<meta name="description" content="the menu at 0866°, vijayawada. coffee, waffles and merch, with live prices. order from your seat.">
 <style>
 .m-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--bronze-soft); }
 .m-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 20px; align-items: end; padding: 22px 0 22px 18px; border-bottom: 1px solid var(--bronze-soft); position: relative; }
@@ -55,6 +55,12 @@
         <p class="lede" style="max-width:26em">hot or iced, with your pick of this fortnight's beans.</p>
         <ol class="m-list" id="brewList"></ol>
       </div>
+      <div id="foodSec" style="display:none;margin-top:clamp(56px,8vw,96px)">
+        <p class="kicker">in-flight snacks</p>
+        <h2>loaded waffles.</h2>
+        <p class="lede" style="max-width:26em">crisp waffles, loaded all the way. add a scoop of ice cream when you order.</p>
+        <ol class="m-list" id="foodList"></ol>
+      </div>
       <div id="merchSec" style="display:none;margin-top:clamp(56px,8vw,96px)">
         <p class="kicker">merch</p>
         <h2>carry-on.</h2>
@@ -77,11 +83,18 @@
         { headers: { apikey: KEY, Authorization: "Bearer " + KEY } })
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(items => {
-      const coffee = items.filter(m => m.category !== "merch" && m.category !== "brew"), merch = items.filter(m => m.category === "merch"), brew = items.filter(m => m.category === "brew");
+      const food = items.filter(m => m.category === "food"), coffee = items.filter(m => !["merch", "brew", "food"].includes(m.category)), merch = items.filter(m => m.category === "merch"), brew = items.filter(m => m.category === "brew");
       if (brew.length) { document.getElementById("brewSec").style.display = "";
         document.getElementById("brewList").innerHTML = brew.map((m, i) => `
         <li class="m-row pop-${POPS[(i + 3) % POPS.length]}${m.available ? "" : " m-out"}">
           <div class="m-code">0866·b${i + 1}<span class="m-tag">hot or iced</span></div>
+          <div><h3 class="m-name">${esc(m.name)}</h3><p class="m-desc">${esc(m.description)}</p></div>
+          <div class="m-side"><span class="m-price">${rs(m.price)}</span>${m.available ? `<a class="btn ghost" href="order/?add=${m.id}">order</a>` : `<span class="m-outtag">sold out</span>`}</div>
+        </li>`).join(""); }
+      if (food.length) { document.getElementById("foodSec").style.display = "";
+        document.getElementById("foodList").innerHTML = food.map((m, i) => `
+        <li class="m-row pop-${POPS[(i + 1) % POPS.length]}${m.available ? "" : " m-out"}">
+          <div class="m-code">0866·f${i + 1}${m.tag ? `<span class="m-tag">${esc(m.tag)}</span>` : ""}</div>
           <div><h3 class="m-name">${esc(m.name)}</h3><p class="m-desc">${esc(m.description)}</p></div>
           <div class="m-side"><span class="m-price">${rs(m.price)}</span>${m.available ? `<a class="btn ghost" href="order/?add=${m.id}">order</a>` : `<span class="m-outtag">sold out</span>`}</div>
         </li>`).join(""); }

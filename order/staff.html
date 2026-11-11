@@ -41,16 +41,17 @@ main { padding: 22px 0 60px; }
 .s-card.done, .s-card.cancelled { opacity: .55; box-shadow: none; --c: var(--ink-soft); }
 @keyframes s-flash { 50% { box-shadow: 0 0 0 5px var(--mango); } }
 .s-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-.s-no { font-family: var(--board); font-weight: 700; font-size: 46px; line-height: .95; letter-spacing: .01em; }
-.s-who { font-family: var(--display); font-style: italic; font-size: 24px; line-height: 1.1; margin-top: 4px; word-break: break-word; }
+.s-no { font-family: var(--board); font-weight: 700; font-size: 26px; line-height: .95; letter-spacing: .01em; }
+.s-who { font-family: var(--display); font-style: italic; font-size: 16px; line-height: 1.1; margin-top: 4px; word-break: break-word; }
 .s-ago { font-size: 14px; color: var(--ink-soft); text-align: right; }
 .s-st { display: inline-block; margin-top: 8px; font-family: var(--board); font-weight: 700; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--c, var(--ink)); color: color-mix(in srgb, var(--c, var(--ink)) 80%, var(--ink)); }
 .s-items { list-style: none; margin: 12px 0; padding: 8px 0; border-top: 1px dashed rgba(57,24,15,.3); border-bottom: 1px dashed rgba(57,24,15,.3); }
-.s-items li { display: flex; justify-content: space-between; font-size: 18px; padding: 3px 0; }
-.s-items b { font-family: var(--board); font-size: 19px; }
-.s-note { background: color-mix(in srgb, var(--mango) 35%, #FFFCF6); border-left: 3px solid var(--mango); padding: 6px 10px; margin-bottom: 12px; font-style: italic; word-break: break-word; }
+.s-items li { display: flex; justify-content: space-between; gap: 12px; font-size: 27px; font-weight: 500; line-height: 1.2; padding: 8px 0; }
+.s-items li + li { border-top: 1px solid rgba(57,24,15,.1); }   /* the drinks and food are what staff read across the counter, so they're the biggest thing on the card */
+.s-items b { font-family: var(--board); font-size: 28px; }
+.s-note { background: color-mix(in srgb, var(--mango) 35%, #FFFCF6); border-left: 3px solid var(--mango); padding: 6px 10px; margin-bottom: 12px; font-style: italic; font-size: 20px; word-break: break-word; }
 .s-pay { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-.s-amt { font-family: var(--display); font-style: italic; font-size: 30px; line-height: 1; }
+.s-amt { font-family: var(--display); font-style: italic; font-size: 20px; line-height: 1; }
 .s-pm { font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin-top: 4px; }
 .s-paid { font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #2F6E3B; border: 1.5px solid #3E8E4E; border-radius: 999px; padding: 6px 14px; }
 .s-card .btn { font-size: 16px; }
@@ -87,15 +88,15 @@ main { padding: 22px 0 60px; }
 .s-utr.has { background: color-mix(in srgb, var(--mango) 30%, #FFFCF6); border: 1px solid var(--mango); }
 .s-utr b { font-family: var(--board); letter-spacing: .06em; }
 .s-dup { color: var(--red); font-weight: 600; }
-.s-opt { display: block; width: fit-content; margin-top: 3px; padding: 1px 10px; border-radius: 999px; background: var(--sky, #A9D8FF); background: color-mix(in srgb, var(--monsoon) 22%, #fff); font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+.s-opt { display: block; width: fit-content; margin-top: 5px; padding: 2px 10px; border-radius: 8px; background: var(--sky, #A9D8FF); background: color-mix(in srgb, var(--monsoon) 22%, #fff); font-family: var(--board); font-weight: 700; font-size: 16px; line-height: 1.3; letter-spacing: .06em; text-transform: uppercase; }
 .s-items li { align-items: flex-start; }
 .s-qty { display: inline-flex; align-items: center; gap: 8px; flex: none; }
-.s-minus { border: 1px solid var(--red); color: var(--red); background: none; border-radius: 999px; padding: 1px 9px; font: 700 13px var(--board); cursor: pointer; }
+.s-minus { border: 1px solid var(--red); color: var(--red); background: none; border-radius: 999px; padding: 3px 10px; font: 700 14px var(--board); cursor: pointer; }
 .s-edited { margin: -2px 0 10px; font-family: var(--board); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--red); }
 .s-log { list-style: none; margin: 0 0 12px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--red) 7%, #fff); font-size: 14px; line-height: 1.45; }
 .s-log li + li { margin-top: 6px; }
 .s-log span { color: var(--ink-soft); }
-.s-add { display: block; width: fit-content; margin-top: 3px; padding: 1px 10px; border-radius: 999px; background: var(--mango); font-family: var(--board); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+.s-add { display: block; width: fit-content; margin-top: 5px; padding: 2px 10px; border-radius: 8px; background: var(--mango); font-family: var(--board); font-weight: 700; font-size: 16px; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; }
 .s-me { font-size: 14px; color: var(--paper); border: 1px solid rgba(241,234,219,.35); border-radius: 999px; padding: 3px 12px; }
 .s-me:empty { display: none; }
 .s-wa { width: 100%; justify-content: center; margin-top: 12px; border-color: #1f8f4e; color: #17733d; }
@@ -247,7 +248,8 @@ async function login(pin, silent){
     $("#whoami").textContent = who.label;
     document.querySelectorAll("[data-admin]").forEach(b => b.style.display = ROLE === "admin" ? "" : "none");
     $("#login").style.display = "none"; $("#app").style.display = "";
-    keepAwake(); refresh(); clearInterval(timer); timer = setInterval(refresh, 4000);
+    keepAwake(); loadKN(); refresh(); clearInterval(timer); timer = setInterval(refresh, 4000);
+    clearInterval(login.kn); login.kn = setInterval(loadKN, 300000);
     return true;
   } catch (e) { $("#lerr").textContent = e.message; return false; }
 }
@@ -282,6 +284,11 @@ async function refresh(){
     $("#live").classList.add("off"); $("#live").lastElementChild.textContent = "reconnecting…";
   }
 }
+/* kitchen names: staff see the plain name ("milk chocolate waffle"), not the menu name ("milk run") */
+let KN = {};
+const kname = i => KN[i.id] || i.name;
+function setKN(items){ items.forEach(m => { if (m.kitchen_name) KN[m.id] = m.kitchen_name; else delete KN[m.id]; }); }
+async function loadKN(){ try { setKN(await rpc("staff_menu", { p_pin: PIN })); render(); } catch {} }
 function ago(ts){ const s = (Date.now() - new Date(ts)) / 1000; if (s < 60) return "just now"; if (s < 3600) return Math.floor(s / 60) + " min ago"; return new Date(ts).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).toLowerCase(); }
 const NEXT = { new: ["preparing", "start making"], preparing: ["ready", "mark ready"], ready: ["done", "picked up"] };
 const LABEL = { new: "new", preparing: "making", ready: "ready", done: "picked up", cancelled: "cancelled" };
@@ -302,8 +309,8 @@ function render(){
         <div><div class="s-no">${pad(o.order_no)}</div><div class="s-who">${esc(o.customer_name)}</div><span class="s-st">${LABEL[o.status]}</span>${o.receipt_no ? `<div class="s-rno">${esc(o.receipt_no)}</div>` : ""}</div>
         <div class="s-ago">${ago(o.created_at)}</div>
       </div>
-      <ul class="s-items">${o.items.map((i, idx) => `<li><span>${esc(i.name)}${i.size ? ` · <b style="font-size:inherit;text-transform:uppercase">${esc(i.size)}</b>` : ""}${(i.options || []).map(x => `<span class="s-opt">${esc(x)}</span>`).join("")}${(i.addons || []).map(x => `<span class="s-add">+ ${esc(x)}</span>`).join("")}</span>
-        <span class="s-qty"><b>× ${i.qty}</b>${["new", "preparing", "ready"].includes(o.status) && !(o.items.length === 1 && i.qty === 1) ? `<button class="s-minus" data-adj="${o.id}" data-idx="${idx}" data-qty="${i.qty}" title="remove one" aria-label="remove one ${esc(i.name)}">−1</button>` : ""}</span></li>`).join("")}</ul>
+      <ul class="s-items">${o.items.map((i, idx) => `<li><span>${esc(kname(i))}${i.size ? ` · <b style="font-size:inherit;text-transform:uppercase">${esc(i.size)}</b>` : ""}${(i.options || []).map(x => `<span class="s-opt">${esc(x)}</span>`).join("")}${(i.addons || []).map(x => `<span class="s-add">+ ${esc(x)}</span>`).join("")}</span>
+        <span class="s-qty"><b>× ${i.qty}</b>${["new", "preparing", "ready"].includes(o.status) && !(o.items.length === 1 && i.qty === 1) ? `<button class="s-minus" data-adj="${o.id}" data-idx="${idx}" data-qty="${i.qty}" title="remove one" aria-label="remove one ${esc(kname(i))}">−1</button>` : ""}</span></li>`).join("")}</ul>
       ${o.edited ? `<div class="s-edited">${o.status === "cancelled" ? "cancelled" : "changed at the counter"}${o.original_total != null && o.original_total !== o.total ? ` · was ${rs(o.original_total)}` : ""}</div>` : ""}
       ${ROLE === "admin" && (o.changes || []).length ? `<ul class="s-log">${o.changes.map(c => `<li><b>${new Date(c.at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).toLowerCase()} · ${esc(c.by)}</b> ${esc(c.action)}: ${esc(c.detail)}${c.old_total !== c.new_total ? ` <span>(${rs(c.old_total)} → ${rs(c.new_total)})</span>` : ""}</li>`).join("")}</ul>` : ""}
       ${o.note ? `<div class="s-note">${esc(o.note)}</div>` : ""}
@@ -338,7 +345,7 @@ document.addEventListener("click", e => {
     act(t.dataset.st, t.dataset.to, null, t); }
   if (t.dataset.adj) { const o = orders.find(x => x.id === t.dataset.adj), idx = +t.dataset.idx, q = +t.dataset.qty, it = o && o.items[idx];
     if (!it) return;
-    const reason = prompt(`remove one ${it.name} from order ${pad(o.order_no)}?\nthe total drops by ₹${it.price}.\n\nreason (e.g. ordered twice by mistake):`, "");
+    const reason = prompt(`remove one ${kname(it)} from order ${pad(o.order_no)}?\nthe total drops by ₹${it.price}.\n\nreason (e.g. ordered twice by mistake):`, "");
     if (reason === null) return;
     t.disabled = true;
     rpc("staff_adjust_item", { p_pin: PIN, p_id: o.id, p_index: idx, p_new_qty: q - 1, p_reason: reason })
@@ -384,7 +391,7 @@ document.addEventListener("click", async e => {
 let stock = [];
 let beanStock = {};
 async function loadStock(){ try {
-  stock = await rpc("staff_menu", { p_pin: PIN });
+  stock = await rpc("staff_menu", { p_pin: PIN }); setKN(stock);
   const r = await fetch(`${SB}/rest/v1/bean_stock?select=origin,sold_out,premium`, { headers: { apikey: KEY, Authorization: "Bearer " + KEY } });
   beanStock = {}; if (r.ok) (await r.json()).forEach(b => beanStock[b.origin] = b);
   renderStock(); } catch (e) { toast(e.message); } }
@@ -398,17 +405,17 @@ document.addEventListener("click", async e => {
 function renderStock(){
   const sec = (title, list) => list.length ? `<h3 class="s-h">${title}</h3>` + list.map(m => `
     <div class="s-stock ${m.available ? "" : "out"}">
-      <div class="s-stock-name">${esc(m.name)}<small>${rs(m.price)}${!m.available ? " · hidden from orders" : ""}</small></div>
+      <div class="s-stock-name">${esc(m.kitchen_name || m.name)}<small>${m.kitchen_name ? `“${esc(m.name)}” on the menu · ` : ""}${rs(m.price)}${!m.available ? " · hidden from orders" : ""}</small></div>
       <button class="s-toggle" data-avail="${m.id}" aria-pressed="${!m.available}">${m.available ? "available" : "sold out"}</button>
       ${(m.sizes || []).length ? `<div class="s-sizes">${m.sizes.map(z => `<button data-szout="${m.id}" data-sz="${esc(z)}" aria-pressed="${(m.sold_out_sizes || []).includes(z)}" aria-label="size ${esc(z)}">${esc(z)}</button>`).join("")}<span class="s-sizes-hint">tap a size to mark it sold out</span></div>` : ""}
     </div>`).join("") : "";
   const board = ((window.ARRIVALS && window.ARRIVALS.beans) || []).filter(b => b.origin);
-  $("#stockList").innerHTML = sec("drinks", stock.filter(m => m.category !== "merch" && m.category !== "brew")) + sec("manual brews", stock.filter(m => m.category === "brew")) +
+  $("#stockList").innerHTML = sec("drinks", stock.filter(m => !["merch", "brew", "food"].includes(m.category))) + sec("manual brews", stock.filter(m => m.category === "brew")) +
     (board.length ? `<h3 class="s-h">beans <small class="quiet" style="font-size:15px;font-style:normal">(from the arrivals board)</small></h3>` + board.map(b => { const st = beanStock[b.origin] || {}; return `
     <div class="s-stock ${st.sold_out ? "out" : ""}">
       <div class="s-stock-name">${esc(b.name)}<small>${esc(b.origin)}${st.premium ? ` · premium +${rs(st.premium)}` : ""}${st.sold_out ? " · hidden from orders" : ""}</small></div>
       <button class="s-toggle" data-bean="${esc(b.origin)}" aria-pressed="${!!st.sold_out}">${st.sold_out ? "ran out" : "in stock"}</button>
-    </div>`; }).join("") : "") + sec("merch", stock.filter(m => m.category === "merch"));
+    </div>`; }).join("") : "") + sec("waffles & food", stock.filter(m => m.category === "food")) + sec("merch", stock.filter(m => m.category === "merch"));
 }
 async function setStock(m, before){
   renderStock();
@@ -418,7 +425,7 @@ async function setStock(m, before){
 document.addEventListener("click", e => {
   const av = e.target.closest("[data-avail]"), sz = e.target.closest("[data-szout]");
   if (av) { const m = stock.find(x => x.id === av.dataset.avail); const before = { available: m.available };
-    m.available = !m.available; setStock(m, before); toast(m.available ? `${m.name} is back on` : `${m.name} marked sold out`); }
+    m.available = !m.available; setStock(m, before); toast(m.available ? `${m.kitchen_name || m.name} is back on` : `${m.kitchen_name || m.name} marked sold out`); }
   if (sz) { const m = stock.find(x => x.id === sz.dataset.szout), z = sz.dataset.sz, cur = m.sold_out_sizes || [], before = { sold_out_sizes: [...cur] };
     m.sold_out_sizes = cur.includes(z) ? cur.filter(x => x !== z) : [...cur, z]; setStock(m, before);
     toast(m.sold_out_sizes.includes(z) ? `${m.name} ${z} marked sold out` : `${m.name} ${z} is back`); }
@@ -459,13 +466,14 @@ $("#nTest").onclick = async () => {
 };
 
 function itemForm(m){
-  m = m || { id: "", emoji: "☕", name: "", price: "", description: "", tag: "", available: true, sort: 99 };
+  m = m || { id: "", emoji: "☕", name: "", price: "", description: "", tag: "", kitchen_name: "", available: true, sort: 99 };
   return `<div class="s-mi ${m.available ? "" : "off"}" data-id="${m.id}">
     <div class="field"><label>name</label><input value="${esc(m.name)}" data-k="name"></div>
     <div class="field"><label>price (₹)</label><input value="${m.price}" data-k="price" type="number" inputmode="numeric" min="0"></div>
     <div class="full">
       <div class="field"><label>description</label><input value="${esc(m.description)}" data-k="description"></div>
       <div class="field" style="max-width:180px"><label>tag (optional)</label><input value="${esc(m.tag)}" data-k="tag"></div>
+      <div class="field"><label>name on the staff screen (optional)</label><input value="${esc(m.kitchen_name || "")}" data-k="kitchen_name" placeholder="e.g. milk chocolate waffle"></div>
     </div>
     <input type="hidden" value="${esc(m.emoji)}" data-k="emoji">
     <div class="act">
@@ -494,7 +502,7 @@ document.addEventListener("click", async e => {
   if (!it.name || it.price === "" || isNaN(+it.price)) { toast("name and price are needed"); return; }
   it.price = Math.round(+it.price); it.sort = parseInt(it.sort) || 99;
   save.disabled = true;
-  try { await rpc("staff_save_item", { p_pin: PIN, p_item: it }); toast(id ? "saved" : "added"); loadMenu(); }
+  try { await rpc("staff_save_item", { p_pin: PIN, p_item: it }); toast(id ? "saved" : "added"); loadMenu(); loadKN(); }
   catch (err) { toast(err.message); save.disabled = false; }
 });
 
